@@ -1,8 +1,7 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" />
   <title>Serial Number Generator</title>
   <style>
     body {
@@ -30,6 +29,7 @@
       border-radius: 5px;
       cursor: pointer;
       transition: background-color 0.3s ease;
+      margin-right: 5px;
     }
     button:hover {
       background-color: #b71c1c;
@@ -78,16 +78,21 @@
 <body>
 
 <h2>Serial Number Generator</h2>
+
 <label>Part Number: <input id="partNumber" value="1949046-00-B"></label><br>
 <label>Vendor Code (3 digits): <input id="vendorCode" value="826"></label><br>
-<label>Quantity: <input type="number" id="quantity" value="1"></label><br>
+<label>Quantity: <input type="number" id="quantity" value="1" min="1"></label><br>
 <button onclick="generateLabels()">Generate</button>
 <button onclick="window.print()">Print Labels</button>
 
 <div id="labels"></div>
 
+<!-- QR Code Generator -->
 <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.0/build/qrcode.min.js"></script>
 <script>
+  // Maintain a counter using localStorage to prevent duplication
+  let serialCounter = parseInt(localStorage.getItem('serialCounter') || '1');
+
   function dayOfYear(date = new Date()) {
     const start = new Date(date.getFullYear(), 0, 0);
     const diff = date - start + ((start.getTimezoneOffset() - date.getTimezoneOffset()) * 60 * 1000);
@@ -95,8 +100,8 @@
   }
 
   function generateLabels() {
-    const part = document.getElementById("partNumber").value;
-    const vendor = document.getElementById("vendorCode").value;
+    const part = document.getElementById("partNumber").value.trim();
+    const vendor = document.getElementById("vendorCode").value.padStart(3, '0');
     const qty = parseInt(document.getElementById("quantity").value);
     const labelsDiv = document.getElementById("labels");
     labelsDiv.innerHTML = ""; // Clear existing labels
@@ -104,8 +109,8 @@
     const year = new Date().getFullYear().toString().slice(-2);
     const doy = ("000" + dayOfYear()).slice(-3);
 
-    for (let i = 1; i <= qty; i++) {
-      const run = ("000000" + i).slice(-6);
+    for (let i = 0; i < qty; i++) {
+      const run = ("000000" + serialCounter).slice(-6);
       const serial = `AC${vendor}${year}${doy}${run}`;
 
       const label = document.createElement("div");
@@ -117,6 +122,8 @@
 
       const qrCanvas = document.createElement("canvas");
       qrCanvas.className = "qr";
+
+      // QR code rendering
       QRCode.toCanvas(qrCanvas, serial, { width: 100 }, function (error) {
         if (error) console.error(error);
       });
@@ -128,12 +135,18 @@
 
       const info = document.createElement("div");
       info.className = "info";
-      info.innerHTML = `<strong>(P)</strong> ${part}<br><strong>(S)</strong> ${serial}`;
+      const date = new Date().toLocaleString();
+      info.innerHTML = `<strong>(P)</strong> ${part}<br><strong>(S)</strong> ${serial}<br><strong>Date:</strong> ${date}`;
 
       label.appendChild(row);
       label.appendChild(info);
       labelsDiv.appendChild(label);
+
+      serialCounter++;
     }
+
+    // Update counter in storage
+    localStorage.setItem('serialCounter', serialCounter.toString());
   }
 </script>
 
