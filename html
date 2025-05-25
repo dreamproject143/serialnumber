@@ -1,1 +1,141 @@
 
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Tesla Label Generator</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: #f4f4f4;
+      margin: 20px;
+    }
+    h2 {
+      color: #cc0000;
+    }
+    label, input, button {
+      margin: 10px 0;
+      font-size: 1rem;
+    }
+    input {
+      padding: 5px;
+      border-radius: 4px;
+      border: 1px solid #ccc;
+    }
+    button {
+      padding: 10px 15px;
+      background-color: #e82127;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+    button:hover {
+      background-color: #b71c1c;
+    }
+    .label {
+      border: 1px solid #ccc;
+      background: white;
+      width: 320px;
+      padding: 15px;
+      margin: 20px 0;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      border-radius: 8px;
+      position: relative;
+    }
+    .tesla-logo {
+      position: absolute;
+      right: 10px;
+      top: 10px;
+      width: 50px;
+    }
+    .qr {
+      width: 100px;
+      height: 100px;
+    }
+    .row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .info {
+      margin-top: 10px;
+      font-size: 1rem;
+      color: #333;
+    }
+    @media print {
+      button, input, label, h2 {
+        display: none;
+      }
+      body {
+        margin: 0;
+        background: white;
+      }
+    }
+  </style>
+</head>
+<body>
+
+<h2>Tesla Serial Label Generator</h2>
+<label>Part Number: <input id="partNumber" value="1949046-00-B"></label><br>
+<label>Vendor Code (3 digits): <input id="vendorCode" value="826"></label><br>
+<label>Quantity: <input type="number" id="quantity" value="1"></label><br>
+<button onclick="generateLabels()">Generate</button>
+<button onclick="window.print()">Print Labels</button>
+
+<div id="labels"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.0/build/qrcode.min.js"></script>
+<script>
+  function dayOfYear(date = new Date()) {
+    const start = new Date(date.getFullYear(), 0, 0);
+    const diff = date - start + ((start.getTimezoneOffset() - date.getTimezoneOffset()) * 60 * 1000);
+    return Math.floor(diff / (1000 * 60 * 60 * 24));
+  }
+
+  function generateLabels() {
+    const part = document.getElementById("partNumber").value;
+    const vendor = document.getElementById("vendorCode").value;
+    const qty = parseInt(document.getElementById("quantity").value);
+    const labelsDiv = document.getElementById("labels");
+    labelsDiv.innerHTML = ""; // Clear existing labels
+
+    const year = new Date().getFullYear().toString().slice(-2);
+    const doy = ("000" + dayOfYear()).slice(-3);
+
+    for (let i = 1; i <= qty; i++) {
+      const run = ("000000" + i).slice(-6);
+      const serial = `AC${vendor}${year}${doy}${run}`;
+
+      const label = document.createElement("div");
+      label.className = "label";
+
+      const logo = document.createElement("img");
+      logo.src = "https://upload.wikimedia.org/wikipedia/commons/b/bd/Tesla_Motors.svg";
+      logo.className = "tesla-logo";
+
+      const qrCanvas = document.createElement("canvas");
+      qrCanvas.className = "qr";
+      QRCode.toCanvas(qrCanvas, serial, { width: 100 }, function (error) {
+        if (error) console.error(error);
+      });
+
+      const row = document.createElement("div");
+      row.className = "row";
+      row.appendChild(qrCanvas);
+      row.appendChild(logo);
+
+      const info = document.createElement("div");
+      info.className = "info";
+      info.innerHTML = `<strong>(P)</strong> ${part}<br><strong>(S)</strong> ${serial}`;
+
+      label.appendChild(row);
+      label.appendChild(info);
+      labelsDiv.appendChild(label);
+    }
+  }
+</script>
+
+</body>
+</html>
