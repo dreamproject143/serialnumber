@@ -2,153 +2,1583 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Serial Number Generator</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>JHM Serial Number Generator</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <style>
     body {
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      font-family: 'Montserrat', 'Segoe UI', Roboto, 'Helvetica Neue', Arial, 'Noto Sans', sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji'; /* Updated font stack */
+      margin: 0;
+      padding: 20px;
       background-color: #f4f4f4;
-      margin: 20px;
-    }
-    h2 {
-      color: #cc0000;
-    }
-    label, input, button {
-      margin: 10px 0;
-      font-size: 1rem;
-    }
-    input {
-      padding: 5px;
-      border-radius: 4px;
-      border: 1px solid #ccc;
-    }
-    button {
-      padding: 10px 15px;
-      background-color: #e82127;
-      color: white;
-      border: none;
-      border-radius: 5px;
-      cursor: pointer;
-      transition: background-color 0.3s ease;
-      margin-right: 5px;
-    }
-    button:hover {
-      background-color: #b71c1c;
-    }
-    .label {
-      border: 1px solid #ccc;
-      background: white;
-      width: 320px;
-      padding: 15px;
-      margin: 20px 0;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-      border-radius: 8px;
-      position: relative;
-    }
-    .tesla-logo {
-      position: absolute;
-      right: 10px;
-      top: 10px;
-      width: 50px;
-    }
-    .qr {
-      width: 100px;
-      height: 100px;
-    }
-    .row {
       display: flex;
-      justify-content: space-between;
-      align-items: center;
+      justify-content: center;
+      align-items: flex-start;
+      min-height: 100vh;
     }
-    .info {
-      margin-top: 10px;
-      font-size: 1rem;
+    .container {
+      max-width: 1200px;
+      width: 100%;
+      margin: auto;
+      background-color: #fff;
+      border-radius: 10px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+      padding: 20px;
+    }
+    h1 {
+      text-align: center;
+      color: #1976d2; /* Deep blue */
+      margin-bottom: 25px;
+      font-family: 'Montserrat', sans-serif; /* Apply Montserrat to heading */
+    }
+    .tabs {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 2;
+      border-bottom: 2px solid #eee;
+    }
+    .tab {
+      padding: 12px 25px;
+      background: #eee;
+      cursor: pointer;
+      border-radius: 8px 8px 0 0;
+      font-weight: bold;
+      color: #555;
+      transition: all 0.3s ease;
+    }
+    .tab.active {
+      background: #fff;
+      border-bottom: 3px solid #1976d2; /* Highlight active tab with blue border */
+      color: #1976d2; /* Deep blue */
+      box-shadow: 0 -2px 5px rgba(0,0,0,0.05);
+    }
+    .tab:hover:not(.active) {
+      background: #e0e0e0;
+      color: #333; /* Slightly darker text on hover */
+    }
+    .tab-content {
+      display: none;
+      padding: 20px;
+      border-radius: 0 8px 8px 8px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+    }
+    .tab-content.active {
+      display: block;
+    }
+    .form-group {
+      margin-bottom: 18px;
+    }
+    label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: bold;
       color: #333;
     }
+    input, select {
+      width: calc(100% - 20px); /* Adjust for padding */
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      font-size: 16px;
+      box-sizing: border-box; /* Include padding in width */
+      transition: border-color 0.2s ease, box-shadow 0.2s ease; /* Smooth transition for focus */
+    }
+    input:focus, select:focus {
+      border-color: #1976d2; /* Blue border on focus */
+      outline: none; /* Remove default outline */
+      box-shadow: 0 0 0 3px rgba(25, 118, 210, 0.2); /* Blue shadow on focus */
+    }
+    button {
+      padding: 12px 25px;
+      background: linear-gradient(180deg, #2196f3 0%, #1976d2 100%); /* Blue gradient */
+      color: white;
+      border: none;
+      border-radius: 9999px; /* Fully rounded */
+      cursor: pointer;
+      margin-right: 15px;
+      font-size: 16px;
+      font-weight: bold;
+      transition: background 0.3s ease, transform 0.2s ease, box-shadow 0.2s ease;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+      text-shadow: 0 1px 2px rgba(0,0,0,0.1); /* Subtle text shadow */
+    }
+    button:hover {
+      background: linear-gradient(180deg, #1976d2 0%, #1565c0 100%); /* Darker blue gradient on hover */
+      transform: translateY(-3px); /* More pronounced lift */
+      box-shadow: 0 6px 12px rgba(0,0,0,0.3); /* Larger shadow on hover */
+    }
+    button:active {
+      transform: translateY(0);
+      box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+    }
+    button:disabled { /* Style for disabled buttons */
+      background: #cccccc;
+      cursor: not-allowed;
+      box-shadow: none;
+      transform: none;
+      text-shadow: none;
+    }
+    /* Updated label-card styling for horizontal alignment */
+    .label-card {
+      width: 480px; /* Increased width to give more space */
+      height: 180px; /* Fixed height for consistent label size */
+      border: 2px solid #000;
+      padding: 10px; /* Adjusted padding for flex layout */
+      margin: 15px;
+      background: #fff;
+      text-align: center; /* Fallback, but flex will override */
+      font-size: 15px;
+      border-radius: 8px;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+      display: flex; /* Make it a flex container */
+      align-items: center; /* Vertically align items */
+      justify-content: space-between; /* Distribute space between items */
+      box-sizing: border-box; /* Include padding in width/height */
+      flex-wrap: nowrap; /* Prevent wrapping for horizontal layout */
+      gap: 2px; /* Reduced gap for closer elements */
+    }
+    .label-card img.qr-code {
+      width: 120px; /* Adjust size as needed */
+      height: 120px;
+      flex-shrink: 0; /* Prevent shrinking */
+      border: 1px solid #eee; /* Subtle border for QR code */
+      border-radius: 5px; /* Maintain border-radius */
+    }
+    /* New div to group Part and Serial numbers */
+    .label-text-block {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: flex-start; /* Align text to the left within its block */
+      flex-grow: 1; /* Allow text block to take available space */
+    }
+    .label-text-block p {
+      margin: 2px 0; /* Reduce margin for stacked paragraphs */
+      font-size: 18px; /* Adjust font size for readability */
+      font-weight: bold;
+      color: #333;
+      white-space: nowrap; /* Prevent text wrapping */
+      overflow: hidden; /* Ensure text doesn't overflow */
+      text-overflow: ellipsis; /* Add ellipsis if text overflows */
+    }
+    .label-card img.tesla-logo {
+      width: 80px; /* Adjust size as needed */
+      height: auto; /* Maintain aspect ratio */
+      flex-shrink: 0; /* Prevent shrinking */
+      border-radius: 5px; /* Maintain border-radius */
+      max-width: 80px; /* Explicitly set max-width */
+      max-height: 80px; /* Explicitly set max-height if needed to prevent vertical overflow */
+      object-fit: contain; /* Ensures the entire image fits within its bounds without cropping */
+    }
+
+    .preview-area {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      margin-top: 30px;
+      padding: 10px;
+      border: 1px dashed #ccc;
+      border-radius: 8px;
+      min-height: 150px;
+      align-items: center;
+      background-color: #fcfcfc;
+    }
+    .table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+      border-radius: 8px;
+      overflow: hidden; /* For rounded corners on table */
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+    .table th, .table td {
+      border: 1px solid #ddd; /* Lighter table borders */
+      padding: 12px;
+      text-align: left;
+      font-size: 15px;
+    }
+    .table th {
+      background: #1976d2; /* Deep blue */
+      color: white;
+      font-weight: bold;
+    }
+    .table tr:nth-child(even) {
+      background-color: #f9f9f9;
+    }
+    .table tr:hover { /* Hover effect for table rows */
+      background-color: #e3f2fd; /* Light blue on hover */
+    }
+    .table button {
+      padding: 6px 12px;
+      font-size: 14px;
+      margin-right: 0;
+      box-shadow: none;
+      background: #2196f3; /* Medium blue */
+    }
+    .table button:hover {
+      background: #1976d2; /* Deep blue on hover */
+    }
+    .error {
+      color: #00796b; /* Darker blue-green */
+      margin-top: 15px;
+      font-weight: bold;
+      text-align: center;
+      padding: 10px;
+      background-color: #e0f7fa; /* Light blue */
+      border: 1px solid #80deea; /* Darker blue */
+      border-radius: 6px;
+    }
+    /* Modal/Message Box Styling */
+    .message-box-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.6);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 1000;
+      opacity: 0;
+      visibility: hidden;
+      transition: opacity 0.3s ease, visibility 0.3s ease;
+    }
+    .message-box-overlay.active {
+      opacity: 1;
+      visibility: visible;
+    }
+    .message-box {
+      background: #fff;
+      padding: 30px;
+      border-radius: 10px;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+      text-align: center;
+      max-width: 400px;
+      width: 90%;
+      transform: translateY(-20px);
+      transition: transform 0.3s ease;
+    }
+    .message-box-overlay.active .message-box {
+      transform: translateY(0);
+    }
+    .message-box p {
+      margin-bottom: 20px;
+      font-size: 18px;
+      color: #333;
+    }
+    .message-box input {
+      margin-bottom: 15px;
+      text-align: center;
+    }
+    .message-box button {
+      margin: 0 10px;
+      padding: 10px 20px;
+      font-size: 16px;
+      background: #4CAF50; /* Green for OK/Yes */
+    }
+    .message-box button.cancel {
+      background: #2196f3; /* Medium blue */
+    }
+    .message-box button:hover {
+      transform: translateY(-1px);
+    }
+
+    /* Loading Overlay Styling */
+    #loadingOverlay {
+      display: none; /* Hidden by default */
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(255, 255, 255, 0.7); /* Semi-transparent white background */
+      z-index: 9999; /* Ensure it's on top of other content, higher than message box */
+      justify-content: center;
+      align-items: center;
+      flex-direction: column; /* For spinner and text */
+    }
+
+    #loadingOverlay .spinner {
+      border: 8px solid #f3f3f3; /* Light grey */
+      border-top: 8px solid #1976d2; /* Deep blue */
+      border-radius: 50%;
+      width: 60px;
+      height: 60px;
+      animation: spin 1s linear infinite; /* Spinning animation */
+    }
+
+    /* Keyframes for the spinner animation */
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    /* Print specific styles for label printers like GT800 */
     @media print {
-      button, input, label, h2 {
-        display: none;
-      }
       body {
         margin: 0;
-        background: white;
+        padding: 0;
+        /* For continuous feed, you might want to remove default margins */
       }
+      .container, .tabs, .tab-content, .form-group, .error, #loadingOverlay, #messageBoxOverlay, .pagination-controls {
+        display: none !important; /* Hide everything except the print area and new pagination controls */
+      }
+      .preview-area {
+        display: block !important; /* Make sure preview area is visible for printing */
+        margin: 0 !important;
+        padding: 0 !important;
+        border: none !important;
+        background: none !important;
+        box-shadow: none !important;
+        min-height: auto !important;
+        width: auto !important; /* Allow content to dictate width */
+      }
+      .label-card {
+        width: 100mm; /* Example width for a common label size (e.g., 4x2 inches is ~101.6x50.8mm) */
+        height: 50mm; /* Example height */
+        padding: 5mm; /* Adjusted padding for print to give space from edges */
+        margin: 0; /* Remove margins between labels for continuous feed */
+        border: 1px solid #000; /* Lighter border for print */
+        box-shadow: none;
+        page-break-after: always; /* Ensure each label prints on a new physical label */
+        flex-shrink: 0; /* Prevent labels from shrinking */
+        /* Important for thermal printers: ensure no extra space */
+        overflow: hidden; /* Hide anything that overflows the label boundary */
+        display: flex; /* Apply flex for print as well */
+        align-items: center; /* Vertically center items */
+        justify-content: flex-start; /* Align items to the start (left) */
+        box-sizing: border-box;
+        /* Removed gap here, will use margins for precise control */
+      }
+      .label-card:last-child {
+        page-break-after: auto; /* No page break after the last label */
+      }
+      .label-card img.qr-code {
+        width: 40mm; /* Adjust QR code size for print */
+        height: 40mm;
+        flex-shrink: 0; /* Prevent shrinking */
+      }
+      .label-text-block {
+        display: flex;
+        flex-direction: column;
+        justify-content: center; /* Vertically center content within text block */
+        align-items: flex-start;
+        flex-grow: 1; /* Allow text block to take available space and push logo */
+        margin-left: 5mm; /* Adjusted gap: Increased gap after QR code */
+        /* No margin-right here, flex-grow will handle pushing */
+      }
+      .label-text-block p {
+        font-size: 15pt; /* Increased font size for print */
+        margin: 0.5mm 0; /* Fine-tune vertical spacing for print */
+        white-space: nowrap;
+      }
+      .tesla-logo-container { /* New container for logo and text */
+        display: flex;
+        flex-direction: column;
+        align-items: center; /* Center logo and text horizontally within its block */
+        justify-content: center; /* Center logo and text vertically within its block */
+        margin-left: auto; /* Pushes the entire logo block to the far right, creating the dynamic gap */
+        flex-shrink: 0; /* Prevent shrinking */
+      }
+      .label-card img.tesla-logo {
+        width: 20mm; /* Adjust logo size for print */
+        height: auto;
+        max-width: 20mm;
+        max-height: 20mm;
+        object-fit: contain;
+        /* margin-left removed as it's now handled by tesla-logo-container */
+        /* align-self removed as it's now handled by tesla-logo-container */
+      }
+    }
+
+    /* Responsive adjustments for screen */
+    @media (max-width: 768px) {
+      .container {
+        padding: 15px;
+      }
+      .tabs {
+        flex-wrap: wrap;
+      }
+      .tab {
+        flex-grow: 1;
+        text-align: center;
+        padding: 10px 15px;
+      }
+      button {
+        width: 100%;
+        margin-right: 0;
+        margin-bottom: 10px;
+      }
+      .label-card {
+        width: 95%; /* Adjust width for smaller screens */
+        height: auto; /* Allow height to adjust */
+        flex-direction: column; /* Stack elements vertically on small screens */
+        justify-content: center;
+        align-items: center;
+        padding: 15px;
+      }
+      .label-card img.qr-code, .label-card img.tesla-logo {
+        margin: 10px 0; /* Adjust margins for stacking */
+      }
+      .label-text-block {
+        margin: 10px 0;
+        align-items: center; /* Center text when stacked */
+      }
+    }
+
+    /* Login Form Specific Styles */
+    #loginForm {
+      display: flex; /* Changed to flex to center the box */
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      background-color: #f4f4f4;
+    }
+    #loginBox {
+      background-color: #fff;
+      padding: 40px;
+      border-radius: 10px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+      text-align: center;
+      max-width: 400px;
+      width: 90%;
+    }
+    #loginBox h2 {
+      color: #1976d2;
+      margin-bottom: 5px; /* Reduced margin to bring text closer */
+      font-family: 'Montserrat', sans-serif; /* Apply Montserrat to heading */
+    }
+    #loginBox p.login-subtext { /* New style for the subtext */
+      color: #555;
+      font-size: 14px;
+      margin-bottom: 25px; /* Added margin below subtext */
+    }
+    #loginBox .form-group {
+      margin-bottom: 20px;
+      text-align: left;
+    }
+    #loginBox input[type="text"],
+    #loginBox input[type="password"] {
+      width: 100%;
+      padding: 12px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      font-size: 16px;
+      box-sizing: border-box;
+    }
+    #loginBox button {
+      width: 100%;
+      padding: 12px;
+      font-size: 18px;
+      margin-top: 20px;
+    }
+    #loginError {
+      color: #d32f2f; /* Red for error messages */
+      margin-top: 15px;
+      font-weight: bold;
     }
   </style>
 </head>
 <body>
+  <div id="loadingOverlay" style="display:none;">
+    <div class="spinner"></div>
+  </div>
 
-<h2>Serial Number Generator</h2>
+  <div id="loginForm">
+    <div id="loginBox">
+      <h2>Login</h2>
+      <p class="login-subtext">System Made By RAM</p>
+      <div class="form-group">
+        <label for="username">Username</label>
+        <input type="text" id="username" />
+      </div>
+      <div class="form-group">
+        <label for="password">Password</label>
+        <input type="password" id="password" />
+      </div>
+      <button onclick="handleLogin()">Login</button>
+      <div id="loginError" class="error"></div>
+    </div>
+  </div>
 
-<label>Part Number: <input id="partNumber" value="1949046-00-B"></label><br>
-<label>Vendor Code (3 digits): <input id="vendorCode" value="826"></label><br>
-<label>Quantity: <input type="number" id="quantity" value="1" min="1"></label><br>
-<button onclick="generateLabels()">Generate</button>
-<button onclick="window.print()">Print Labels</button>
+  <div class="container" id="mainContent" style="display:none;">
+    <h1>JHM Serial Number Generator</h1>
 
-<div id="labels"></div>
+    <div class="tabs">
+      <div class="tab active" data-tab="generate">Generate Labels</div>
+      <div class="tab" data-tab="reprint">Reprint</div>
+      <div class="tab" data-tab="parts">Part Manager</div>
+      <div class="tab" data-tab="vendors">Vendor Manager</div>
+      <div class="tab" data-tab="history">History Viewer</div>
+      <button onclick="logout()" style="background-color: #f44336; margin-left: auto;">Logout</button>
+    </div>
+    
+    <div id="generate" class="tab-content active">
+      <div class="form-group">
+        <label for="partSelect">Part Number</label>
+        <select id="partSelect">
+          <option value="">-- Select Part --</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label for="quantity">Quantity (1-50)</label>
+        <input type="number" id="quantity" min="1" max="50" value="1" />
+      </div>
+      <button onclick="generateLabels()">Generate Labels</button>
+      <button onclick="exportToPDF()">Export to PDF</button>
+      <button onclick="printLabels()">Print Labels</button>
+      <div class="preview-area" id="previewArea"></div>
+      <div id="generateError" class="error"></div>
+    </div>
+    
+    <div id="reprint" class="tab-content">
+      <div class="form-group">
+        <label for="serialSearch">Serial Number</label>
+        <input type="text" id="serialSearch" placeholder="e.g., S:AC82525014900001" />
+      </div>
+      <button onclick="reprintLabel()">Reprint Label</button>
+      <button onclick="printReprintLabel()">Print Label</button>
+      <div class="preview-area" id="reprintPreview"></div>
+      <div id="reprintError" class="error"></div>
+    </div>
+    
+    <div id="parts" class="tab-content">
+      <button onclick="addPart()">Add Part</button>
+      <table class="table" id="partsTable">
+        <thead>
+          <tr>
+            <th>Part Number</th>
+            <th>Description</th>
+            <th>Vendor Code</th>
+            <th>Active</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+      <div id="partsError" class="error"></div>
+    </div>
+    
+    <div id="vendors" class="tab-content">
+      <button onclick="addVendor()">Add Vendor</button>
+      <table class="table" id="vendorsTable">
+        <thead>
+          <tr>
+            <th>Code</th>
+            <th>Name</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+      <div id="vendorsError" class="error"></div>
+    </div>
+    
+    <div id="history" class="tab-content">
+      <div class="form-group">
+        <label for="historySerialSearch">Search by Serial Number:</label>
+        <input type="text" id="historySerialSearch" placeholder="Enter full or partial serial number" />
+      </div>
+      <div class="form-group">
+        <label for="historyPartSearch">Search by Part Number:</label>
+        <input type="text" id="historyPartSearch" placeholder="Enter full or partial part number" />
+      </div>
+      <button onclick="filterHistory()">Search History</button>
+      <button onclick="exportHistoryToExcel(true)">Export Filtered to Excel</button>
+      <button onclick="exportHistoryToExcel(false)">Export All to Excel</button>
+      <table class="table" id="historyTable">
+        <thead>
+          <tr>
+            <th>Serial</th>
+            <th>Part</th>
+            <th>Description</th>
+            <th>Vendor Code</th>
+            <th>Date</th>
+            <th>Counter</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+      <div class="pagination-controls" style="display: flex; justify-content: center; align-items: center; gap: 15px; margin-top: 20px;">
+        <button id="prevHistoryPage" onclick="previousHistoryPage()" disabled>Previous</button>
+        <span id="historyPageInfo">Page 1 of 1</span>
+        <button id="nextHistoryPage" onclick="nextHistoryPage()" disabled>Next</button>
+      </div>
+      <div id="historyError" class="error"></div>
+    </div>
+  </div>
 
-<!-- QR Code Generator -->
-<script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.0/build/qrcode.min.js"></script>
-<script>
-  // Maintain a counter using localStorage to prevent duplication
-  let serialCounter = parseInt(localStorage.getItem('serialCounter') || '1');
+  <div id="messageBoxOverlay" class="message-box-overlay">
+    <div class="message-box">
+      <p id="messageBoxText"></p>
+      <input type="text" id="messageBoxInput" style="display:none;" />
+      <button id="messageBoxConfirm" style="display:none;">OK</button>
+      <button id="messageBoxCancel" class="cancel" style="display:none;">Cancel</button>
+      <button id="messageBoxAlert" style="display:none;">OK</button>
+    </div>
+  </div>
 
-  function dayOfYear(date = new Date()) {
-    const start = new Date(date.getFullYear(), 0, 0);
-    const diff = date - start + ((start.getTimezoneOffset() - date.getTimezoneOffset()) * 60 * 1000);
-    return Math.floor(diff / (1000 * 60 * 60 * 24));
-  }
+  <script>
+    console.log("Script loaded successfully");
+    var jsPDF = window.jspdf.jsPDF;
+    // Changed to store only the Google Drive File ID
+    var TESLA_LOGO_FILE_ID = '1en7umlfHN1huVyIsNNib8FzzJdPaiDvP'; 
+    var TESLA_LOGO_BASE64 = ''; 
+    var allParts = [];
+    var currentDisplayedHistory = []; // To store currently displayed history for export
 
-  function generateLabels() {
-    const part = document.getElementById("partNumber").value.trim();
-    const vendor = document.getElementById("vendorCode").value.padStart(3, '0');
-    const qty = parseInt(document.getElementById("quantity").value);
-    const labelsDiv = document.getElementById("labels");
-    labelsDiv.innerHTML = ""; // Clear existing labels
+    // Define your deployed Google Apps Script Web App URL here
+    // IMPORTANT: Replace 'YOUR_DEPLOYED_GOOGLE_APPS_SCRIPT_WEB_APP_URL_HERE' with your actual URL
+    const GAS_WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbyjAQk1VPMUnHAleQgX0muMfumn-j1gHXyBEyT2EbQPtVV-Pv5V7Y-bvccqp3Gaai2Ycg/exec';
 
-    const year = new Date().getFullYear().toString().slice(-2);
-    const doy = ("000" + dayOfYear()).slice(-3);
+    // Pagination variables for history tab
+    var currentPage = 1;
+    var itemsPerPage = 20;
+    var totalHistoryEntries = 0;
+    var currentHistoryFilter = { serial: '', part: '' }; // Store current filter for pagination
 
-    for (let i = 0; i < qty; i++) {
-      const run = ("000000" + serialCounter).slice(-6);
-      const serial = `AC${vendor}${year}${doy}${run}`;
+    function handleLogin() {
+      const usernameInput = document.getElementById('username').value;
+      const passwordInput = document.getElementById('password').value;
+      const loginErrorDiv = document.getElementById('loginError');
 
-      const label = document.createElement("div");
-      label.className = "label";
-
-      const logo = document.createElement("img");
-      logo.src = "https://upload.wikimedia.org/wikipedia/commons/b/bd/Tesla_Motors.svg";
-      logo.className = "tesla-logo";
-
-      const qrCanvas = document.createElement("canvas");
-      qrCanvas.className = "qr";
-
-      // QR code rendering
-      QRCode.toCanvas(qrCanvas, serial, { width: 100 }, function (error) {
-        if (error) console.error(error);
-      });
-
-      const row = document.createElement("div");
-      row.className = "row";
-      row.appendChild(qrCanvas);
-      row.appendChild(logo);
-
-      const info = document.createElement("div");
-      info.className = "info";
-      const date = new Date().toLocaleString();
-      info.innerHTML = `<strong>(P)</strong> ${part}<br><strong>(S)</strong> ${serial}<br><strong>Date:</strong> ${date}`;
-
-      label.appendChild(row);
-      label.appendChild(info);
-      labelsDiv.appendChild(label);
-
-      serialCounter++;
+      if (usernameInput === 'Admin' && passwordInput === 'JHM123') {
+        localStorage.setItem('isLoggedIn', 'true');
+        document.getElementById('loginForm').style.display = 'none';
+        document.getElementById('mainContent').style.display = 'block';
+        loginErrorDiv.textContent = '';
+        initialize();
+      } else {
+        loginErrorDiv.textContent = 'Invalid username or password.';
+      }
     }
 
-    // Update counter in storage
-    localStorage.setItem('serialCounter', serialCounter.toString());
-  }
-</script>
+    function logout() {
+      localStorage.removeItem('isLoggedIn');
+      document.getElementById('mainContent').style.display = 'none';
+      document.getElementById('loginForm').style.display = 'flex';
+      document.getElementById('username').value = '';
+      document.getElementById('password').value = '';
+    }
 
+    function checkLoginStatus() {
+      if (localStorage.getItem('isLoggedIn') === 'true') {
+        document.getElementById('loginForm').style.display = 'none';
+        document.getElementById('mainContent').style.display = 'block';
+        initialize();
+      } else {
+        document.getElementById('loginForm').style.display = 'flex';
+        document.getElementById('mainContent').style.display = 'none';
+      }
+    }
+
+    async function getTeslaLogoBase64() {
+        try {
+            // Use fetch to call the Google Apps Script backend function
+            const response = await fetch(GAS_WEB_APP_URL, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ action: 'getLogoBase64FromDrive', payload: TESLA_LOGO_FILE_ID })
+            });
+            const data = await response.json();
+
+            if (data.error) {
+                console.error('Backend reported error loading logo from Drive:', data.error);
+                TESLA_LOGO_BASE64 = 'https://placehold.co/100x100/CCCCCC/333333?text=Logo'; // Fallback
+            } else if (data === 'ERROR_LOADING_LOGO') { // Check for specific error string returned by backend
+                console.error('Backend reported error loading logo from Drive. Falling back to placeholder.');
+                TESLA_LOGO_BASE64 = 'https://placehold.co/100x100/CCCCCC/333333?text=Logo'; // Fallback
+            } else {
+                TESLA_LOGO_BASE64 = data; // Set the Base64 string received from backend
+            }
+        } catch (error) {
+            console.error('Error fetching logo from backend:', error);
+            TESLA_LOGO_BASE64 = 'https://placehold.co/100x100/CCCCCC/333333?text=Logo'; // Fallback on network/parsing error
+        }
+    }
+
+    function showLoading() {
+      document.getElementById('loadingOverlay').style.display = 'flex';
+      disableButtons(true);
+    }
+
+    function hideLoading() {
+      document.getElementById('loadingOverlay').style.display = 'none';
+      disableButtons(false);
+    }
+
+    function disableButtons(disable) {
+      const buttons = document.querySelectorAll('button');
+      buttons.forEach(btn => btn.disabled = disable);
+    }
+
+    function showMessageBox(message, type, defaultValue = '') {
+      const overlay = document.getElementById('messageBoxOverlay');
+      const messageText = document.getElementById('messageBoxText');
+      const messageInput = document.getElementById('messageBoxInput');
+      const confirmBtn = document.getElementById('messageBoxConfirm');
+      const cancelBtn = document.getElementById('messageBoxCancel');
+      const alertBtn = document.getElementById('messageBoxAlert');
+
+      messageText.textContent = message;
+      messageInput.style.display = 'none';
+      confirmBtn.style.display = 'none';
+      cancelBtn.style.display = 'none';
+      alertBtn.style.display = 'none';
+
+      let resolvePromise;
+      const promise = new Promise(resolve => {
+        resolvePromise = resolve;
+      });
+
+      const handleConfirm = () => {
+        overlay.classList.remove('active');
+        resolvePromise(true);
+      };
+      const handleCancel = () => {
+        overlay.classList.remove('active');
+        resolvePromise(false);
+      };
+      const handleAlert = () => {
+        overlay.classList.remove('active');
+        resolvePromise();
+      };
+      const handlePrompt = () => {
+        overlay.classList.remove('active');
+        resolvePromise(messageInput.value);
+      };
+
+      confirmBtn.onclick = null;
+      cancelBtn.onclick = null;
+      alertBtn.onclick = null;
+
+      if (type === 'confirm') {
+        confirmBtn.textContent = 'Yes';
+        cancelBtn.textContent = 'No';
+        confirmBtn.style.display = 'inline-block';
+        cancelBtn.style.display = 'inline-block';
+        confirmBtn.onclick = handleConfirm;
+        cancelBtn.onclick = handleCancel;
+      } else if (type === 'prompt') {
+        messageInput.value = defaultValue;
+        messageInput.style.display = 'block';
+        confirmBtn.textContent = 'OK';
+        cancelBtn.textContent = 'Cancel';
+        confirmBtn.style.display = 'inline-block';
+        cancelBtn.style.display = 'inline-block';
+        confirmBtn.onclick = handlePrompt;
+        cancelBtn.onclick = handleCancel;
+      } else {
+        alertBtn.textContent = 'OK';
+        alertBtn.style.display = 'inline-block';
+        alertBtn.onclick = handleAlert;
+      }
+      overlay.classList.add('active');
+      return promise;
+    }
+
+    document.querySelectorAll('.tab').forEach(function(tab) {
+      tab.addEventListener('click', function() {
+        document.querySelectorAll('.tab').forEach(function(t) {
+          t.classList.remove('active');
+        });
+        document.querySelectorAll('.tab-content').forEach(function(c) {
+          c.classList.remove('active');
+        });
+        tab.classList.add('active');
+        document.getElementById(tab.dataset.tab).classList.add('active');
+
+        // If history tab is clicked, load history with pagination
+        if (tab.dataset.tab === 'history') {
+          // Reset filter and load first page of history
+          document.getElementById('historySerialSearch').value = '';
+          document.getElementById('historyPartSearch').value = '';
+          currentHistoryFilter = { serial: '', part: '' };
+          loadHistory(1);
+        }
+      });
+    });
+
+    /**
+     * Generic function to make fetch calls to the Apps Script Web App.
+     * @param {string} action - The name of the Google Apps Script function to call.
+     * @param {Object} [payload={}] - The data to send to the backend function.
+     * @returns {Promise<any>} A promise that resolves with the backend's response data.
+     */
+    async function fetchData(action, payload = {}) {
+        try {
+            const response = await fetch(GAS_WEB_APP_URL, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ action: action, payload: payload })
+            });
+
+            if (!response.ok) {
+                const errorText = await response.text();
+                throw new Error(`HTTP error! status: ${response.status}, message: ${errorText}`);
+            }
+
+            const data = await response.json();
+
+            if (data.error) {
+                throw new Error(data.error);
+            }
+            return data;
+        } catch (error) {
+            console.error('Error in fetchData:', error);
+            throw error; // Re-throw to be caught by specific function handlers
+        }
+    }
+
+    async function generateLabels() {
+      showLoading();
+      try {
+        console.log("generateLabels called");
+        var partNumber = document.getElementById('partSelect').value.trim();
+        var quantity = parseInt(document.getElementById('quantity').value);
+        var errorDiv = document.getElementById('generateError');
+
+        var selectedPart = allParts.find(function(part) {
+          return part['Part Number'] === partNumber;
+        });
+
+        if (!partNumber || !selectedPart || !quantity || quantity < 1 || quantity > 50) {
+          errorDiv.textContent = 'Please select a valid Part Number and enter Quantity (1-50).';
+          return hideLoading();
+        }
+
+        var vendorCode = selectedPart['Vendor Code'];
+        if (!vendorCode || !/^[a-zA-Z0-9]{3}$/.test(vendorCode.trim())) {
+          errorDiv.textContent = 'Selected Part has an invalid or missing 3-alphanumeric character Vendor Code. Please update part details.';
+          return hideLoading();
+        }
+        errorDiv.textContent = '';
+
+        var now = new Date();
+        var year = now.getFullYear().toString().slice(-2);
+        var dayOfYear = Math.floor((now - new Date(now.getFullYear(), 0, 0)) / 86400000).toString();
+        dayOfYear = ("000" + dayOfYear).slice(-3);
+
+        const counterData = await fetchData('getCounter');
+        let counter = counterData.counter;
+
+        const entries = Array(quantity).fill().map(function(_, i) {
+          let serialCounter = (counter + i).toString();
+          serialCounter = ("000000" + serialCounter).slice(-6);
+          return {
+            Serial: "S:" + vendorCode + year + dayOfYear + serialCounter,
+            Part: partNumber,
+            Description: selectedPart.Description || '',
+            'Vendor Code': vendorCode,
+            Date: now.toISOString(),
+            Counter: counter + i
+          };
+        });
+
+        await fetchData('setHistory', { entries: entries });
+        await fetchData('incrementCounter', { quantity: quantity });
+
+        var previewArea = document.getElementById('previewArea');
+        previewArea.innerHTML = '';
+
+        entries.forEach(function(entry) {
+          var qrData = "P:" + entry.Part + "\n" + entry.Serial;
+          var qrUrl = "https://api.qrserver.com/v1/create-qr-code/?data=" + encodeURIComponent(qrData) + "&size=150x150";
+
+          const displaySerial = entry.Serial.startsWith('S:') ? entry.Serial.substring(2) : entry.Serial;
+
+          previewArea.innerHTML += [
+            '<div class="label-card">',
+            '<img src="' + qrUrl + '" class="qr-code" alt="QR Code" onerror="this.onerror=null;this.src=\'https://placehold.co/150x150/CCCCCC/333333?text=QR\'" />',
+            '<div class="label-text-block">',
+            '<p class="part-number">(P)' + entry.Part + '</p>',
+            '<p class="serial-number">(S)' + displaySerial + '</p>',
+            '</div>',
+            '<div class="tesla-logo-container">',
+            '<img src="' + TESLA_LOGO_BASE64 + '" class="tesla-logo" alt="JHM Logo" />',
+            '</div>',
+            '</div>'
+          ].join('');
+        });
+        // No need to call loadHistory here, it's called when tab is clicked
+      } catch (error) {
+        errorDiv.textContent = 'Error generating labels: ' + error.message;
+        console.error('Error generating labels:', error);
+      } finally {
+        hideLoading();
+      }
+    }
+
+    async function reprintLabel() {
+      showLoading();
+      try {
+        const serial = document.getElementById('serialSearch').value.trim();
+        const reprintErrorDiv = document.getElementById('reprintError');
+        const reprintPreviewArea = document.getElementById('reprintPreview');
+        reprintPreviewArea.innerHTML = '';
+
+        if (!serial) {
+          reprintErrorDiv.textContent = 'Please enter a serial number to reprint.';
+          return hideLoading();
+        }
+
+        const entry = await fetchData('getSerialById', { serial: serial });
+
+        if (entry) {
+          reprintErrorDiv.textContent = '';
+          var qrData = "P:" + entry.Part + "\n" + entry.Serial;
+          var qrUrl = "https://api.qrserver.com/v1/create-qr-code/?data=" + encodeURIComponent(qrData) + "&size=150x150";
+
+          const displaySerial = entry.Serial.startsWith('S:') ? entry.Serial.substring(2) : entry.Serial;
+
+          reprintPreviewArea.innerHTML += [
+            '<div class="label-card">',
+            '<img src="' + qrUrl + '" class="qr-code" alt="QR Code" onerror="this.onerror=null;this.src=\'https://placehold.co/150x150/CCCCCC/333333?text=QR\'" />',
+            '<div class="label-text-block">',
+            '<p class="part-number">(P)' + entry.Part + '</p>',
+            '<p class="serial-number">(S)' + displaySerial + '</p>',
+            '</div>',
+            '<div class="tesla-logo-container">',
+            '<img src="' + TESLA_LOGO_BASE64 + '" class="tesla-logo" alt="JHM Logo" />',
+            '</div>',
+            '</div>'
+          ].join('');
+
+        } else {
+          reprintErrorDiv.textContent = 'Serial number not found.';
+        }
+      } catch (error) {
+        document.getElementById('reprintError').textContent = 'Error reprinting label: ' + error.message;
+      } finally {
+        hideLoading();
+      }
+    }
+
+    // New function to handle printing for the reprint tab
+    function printReprintLabel() {
+      const reprintPreviewArea = document.getElementById('reprintPreview');
+      if (reprintPreviewArea.children.length === 0) {
+        showMessageBox('No label to print. Please generate a reprint label first.', 'alert');
+        return;
+      }
+
+      // Get the current CSS styles, especially the print media query rules
+      let style_html = '';
+      for (const sheet of document.styleSheets) {
+          try {
+              for (const rule of sheet.cssRules) {
+                  style_html += rule.cssText;
+              }
+          } catch (e) {
+              console.warn("Could not read CSS rules from stylesheet (might be cross-origin):", sheet.href, e);
+          }
+      }
+
+      const printContents = reprintPreviewArea.innerHTML;
+
+      const newWindow = window.open('', '_blank');
+      if (!newWindow) {
+          showMessageBox('Pop-up blocker might be preventing printing. Please allow pop-ups for this site.', 'alert');
+          return;
+      }
+
+      newWindow.document.write('<!DOCTYPE html>');
+      newWindow.document.write('<html lang="en">');
+      newWindow.document.write('<head>');
+      newWindow.document.write('<meta charset="UTF-8">');
+      newWindow.document.write('<meta name="viewport" content="width=device-width, initial-scale=1.0">');
+      newWindow.document.write('<title>Print Label</title>');
+      newWindow.document.write('<style>');
+      newWindow.document.write(style_html); // Inject all current styles
+      newWindow.document.write('</style>');
+      newWindow.document.write('</head>');
+      newWindow.document.write('<body>');
+      newWindow.document.write('<div class="preview-area" style="display:block !important; margin:0 !important; padding:0 !important; border:none !important; background:none !important; box-shadow:none !important; min-height:auto !important; width:auto !important;">'); // Re-apply print-specific styles
+      newWindow.document.write(printContents);
+      newWindow.document.write('</div>');
+      newWindow.document.write('</body>');
+      newWindow.document.write('</html>');
+      newWindow.document.close();
+
+      newWindow.onload = function() {
+          newWindow.focus();
+          newWindow.print();
+          setTimeout(function() {
+              newWindow.close();
+          }, 500); // Small delay to allow print dialog to appear before closing
+      };
+    }
+
+    async function exportToPDF() {
+      showLoading();
+      try {
+        const previewArea = document.getElementById('previewArea');
+        if (previewArea.children.length === 0) {
+          await showMessageBox('No labels to export. Please generate labels first.', 'alert');
+          hideLoading();
+          return;
+        }
+
+        const pdf = new jsPDF('p', 'mm', 'a4');
+        const padding = 10;
+        const labelWidth = 101.6;
+        const labelHeight = 50.8;
+
+        let x = padding;
+        let y = padding;
+
+        for (const labelCard of Array.from(previewArea.children)) {
+          if (y + labelHeight + padding > pdf.internal.pageSize.height) {
+            pdf.addPage();
+            y = padding;
+            x = padding;
+          }
+
+          const canvas = await html2canvas(labelCard, {
+            scale: 2,
+            useCORS: true,
+            logging: false,
+          });
+
+          const imgData = canvas.toDataURL('image/jpeg', 0.9);
+
+          pdf.addImage(imgData, 'JPEG', x, y, labelWidth, labelHeight);
+
+          y += labelHeight + padding;
+        }
+
+        pdf.save('JHM_Labels.pdf');
+        hideLoading();
+        await showMessageBox('Labels exported to PDF successfully!', 'alert');
+      } catch (error) {
+        console.error('Error exporting to PDF:', error);
+        await showMessageBox('Error exporting to PDF: ' + error.message, 'alert');
+        hideLoading();
+      }
+    }
+
+    function printLabels() {
+      const previewArea = document.getElementById('previewArea');
+      if (previewArea.children.length === 0) {
+        showMessageBox('No labels to print. Please generate labels first.', 'alert');
+        return;
+      }
+
+      // Get the current CSS styles, especially the print media query rules
+      let style_html = '';
+      for (const sheet of document.styleSheets) {
+          try {
+              for (const rule of sheet.cssRules) {
+                  style_html += rule.cssText;
+              }
+          } catch (e) {
+              console.warn("Could not read CSS rules from stylesheet (might be cross-origin):", sheet.href, e);
+          }
+      }
+
+      const printContents = previewArea.innerHTML;
+
+      const newWindow = window.open('', '_blank');
+      if (!newWindow) {
+          showMessageBox('Pop-up blocker might be preventing printing. Please allow pop-ups for this site.', 'alert');
+          return;
+      }
+
+      newWindow.document.write('<!DOCTYPE html>');
+      newWindow.document.write('<html lang="en">');
+      newWindow.document.write('<head>');
+      newWindow.document.write('<meta charset="UTF-8">');
+      newWindow.document.write('<meta name="viewport" content="width=device-width, initial-scale=1.0">');
+      newWindow.document.write('<title>Print Labels</title>');
+      newWindow.document.write('<style>');
+      newWindow.document.write(style_html); // Inject all current styles
+      newWindow.document.write('</style>');
+      newWindow.document.write('</head>');
+      newWindow.document.write('<body>');
+      newWindow.document.write('<div class="preview-area" style="display:block !important; margin:0 !important; padding:0 !important; border:none !important; background:none !important; box-shadow:none !important; min-height:auto !important; width:auto !important;">'); // Re-apply print-specific styles
+      newWindow.document.write(printContents);
+      newWindow.document.write('</div>');
+      newWindow.document.write('</body>');
+      newWindow.document.write('</html>');
+      newWindow.document.close();
+
+      newWindow.onload = function() {
+          newWindow.focus();
+          newWindow.print();
+          setTimeout(function() {
+              newWindow.close();
+          }, 500); // Small delay to allow print dialog to appear before closing
+      };
+    }
+
+    function setupEventListeners() {
+      document.querySelectorAll('.tab').forEach(function(tab) {
+        tab.removeEventListener('click', tabClickHandler);
+        tab.addEventListener('click', tabClickHandler);
+      });
+    }
+
+    const tabClickHandler = function() {
+      document.querySelectorAll('.tab').forEach(function(t) {
+        t.classList.remove('active');
+      });
+      document.querySelectorAll('.tab-content').forEach(function(c) {
+        c.classList.remove('active');
+      });
+      this.classList.add('active');
+      document.getElementById(this.dataset.tab).classList.add('active');
+      if (this.dataset.tab === 'history') {
+        // Reset filter and load first page of history when history tab is clicked
+        document.getElementById('historySerialSearch').value = '';
+        document.getElementById('historyPartSearch').value = '';
+        currentHistoryFilter = { serial: '', part: '' };
+        loadHistory(1); 
+      }
+    };
+
+    async function loadParts() {
+      showLoading();
+      try {
+        console.log("loadParts called");
+        const parts = await fetchData('getParts');
+        allParts = parts;
+        const partsTableBody = document.querySelector('#partsTable tbody');
+        partsTableBody.innerHTML = '';
+        const partSelect = document.getElementById('partSelect');
+        partSelect.innerHTML = '<option value="">-- Select Part --</option>';
+
+        parts.forEach(part => {
+          const row = partsTableBody.insertRow();
+          row.insertCell().textContent = part['Part Number'] || '';
+          row.insertCell().textContent = part.Description || '';
+          row.insertCell().textContent = part['Vendor Code'] || '';
+          // MODIFIED: Check if part.Active is the string 'Yes' or boolean true
+          row.insertCell().textContent = (part.Active === 'Yes' || part.Active === true) ? 'Yes' : 'No';
+
+          const actionsCell = row.insertCell();
+          const editButton = document.createElement('button');
+          editButton.textContent = 'Edit';
+          editButton.onclick = () => editPart(part);
+          actionsCell.appendChild(editButton);
+
+          const deleteButton = document.createElement('button');
+          deleteButton.textContent = 'Delete';
+          deleteButton.onclick = () => deletePart(part['Part Number']);
+          actionsCell.appendChild(deleteButton);
+
+          const option = document.createElement('option');
+          option.value = part['Part Number'];
+          option.textContent = `${part['Part Number']} - ${part.Description || ''}`;
+          partSelect.appendChild(option);
+        });
+      } catch (error) {
+        document.getElementById('partsError').textContent = 'Error loading parts: ' + error.message;
+      } finally {
+        hideLoading();
+      }
+    }
+
+    async function addPart() {
+      const partNumber = await showMessageBox('Enter Part Number:', 'prompt');
+      if (partNumber === null || partNumber.trim() === '') {
+        await showMessageBox('Part Number cannot be empty.', 'alert');
+        return;
+      }
+      const trimmedPartNumber = partNumber.trim().toUpperCase();
+
+      if (allParts.some(p => p['Part Number'].toUpperCase() === trimmedPartNumber)) {
+        await showMessageBox(`Part Number "${trimmedPartNumber}" already exists.`, 'alert');
+        return;
+      }
+
+      const description = await showMessageBox('Enter Description (optional):', 'prompt');
+      if (description === null) return;
+
+      const vendorCode = await showMessageBox('Enter Vendor Code (3 alphanumeric):', 'prompt');
+      if (vendorCode === null || !/^[a-zA-Z0-9]{3}$/.test(vendorCode.trim())) {
+        await showMessageBox('Invalid Vendor Code. Must be 3 alphanumeric characters.', 'alert');
+        return;
+      }
+      const trimmedVendorCode = vendorCode.trim().toUpperCase();
+
+      const isActive = await showMessageBox('Is this part Active? (Yes/No)', 'confirm');
+
+      const newPart = {
+        'Part Number': trimmedPartNumber,
+        Description: description.trim(),
+        'Vendor Code': trimmedVendorCode,
+        Active: isActive ? 'Yes' : 'No'
+      };
+
+      allParts.push(newPart); // Add to local array
+      await fetchData('setParts', allParts); // Send the full updated list to backend
+      await loadParts(); // Reload parts from backend to ensure UI is in sync
+      await showMessageBox('Part added successfully!', 'alert');
+    }
+
+    async function editPart(originalPart) {
+      const newPartNumber = await showMessageBox('Edit Part Number:', 'prompt', originalPart['Part Number']);
+      if (newPartNumber === null || newPartNumber.trim() === '') {
+        await showMessageBox('Part Number cannot be empty.', 'alert');
+        return;
+      }
+      const trimmedNewPartNumber = newPartNumber.trim().toUpperCase();
+
+      // Check for duplicate part number, excluding the original part itself
+      if (allParts.some(p => p['Part Number'].toUpperCase() === trimmedNewPartNumber && p['Part Number'].toUpperCase() !== originalPart['Part Number'].toUpperCase())) {
+        await showMessageBox(`Part Number "${trimmedNewPartNumber}" already exists for another part.`, 'alert');
+        return;
+      }
+
+      const newDescription = await showMessageBox('Edit Description:', 'prompt', originalPart.Description);
+      if (newDescription === null) return;
+
+      const newVendorCode = await showMessageBox('Edit Vendor Code:', 'prompt', originalPart['Vendor Code']);
+      if (newVendorCode === null || !/^[a-zA-Z0-9]{3}$/.test(newVendorCode.trim())) {
+        await showMessageBox('Invalid Vendor Code. Must be 3 alphanumeric characters.', 'alert');
+        return;
+      }
+      const trimmedNewVendorCode = newVendorCode.trim().toUpperCase();
+
+      const newIsActive = await showMessageBox('Is this part Active? (Yes/No)', 'confirm');
+
+      const updatedPart = {
+        'Part Number': trimmedNewPartNumber,
+        Description: newDescription.trim(),
+        'Vendor Code': trimmedNewVendorCode,
+        Active: newIsActive ? 'Yes' : 'No'
+      };
+
+      const index = allParts.findIndex(p => p['Part Number'].toUpperCase() === originalPart['Part Number'].toUpperCase());
+      if (index !== -1) {
+        allParts[index] = updatedPart; // Update local array
+        await fetchData('setParts', allParts); // Send the full updated list to backend
+        await loadParts(); // Reload parts from backend to ensure UI is in sync
+        await showMessageBox('Part updated successfully!', 'alert');
+      }
+    }
+
+    async function deletePart(partNumber) {
+      const confirmDelete = await showMessageBox(`Are you sure you want to delete part "${partNumber}"?`, 'confirm');
+      if (confirmDelete) {
+        allParts = allParts.filter(part => part['Part Number'] !== partNumber); // Filter local array
+        await fetchData('setParts', allParts); // Send the filtered list to backend
+        await loadParts(); // Reload parts from backend to ensure UI is in sync
+        await showMessageBox('Part deleted successfully!', 'alert');
+      }
+    }
+
+    async function loadVendors() {
+      showLoading();
+      try {
+        console.log("loadVendors called");
+        const vendors = await fetchData('getVendors');
+        const vendorsTableBody = document.querySelector('#vendorsTable tbody');
+        vendorsTableBody.innerHTML = '';
+
+        vendors.forEach(vendor => {
+          const row = vendorsTableBody.insertRow();
+          row.insertCell().textContent = vendor.Code || '';
+          row.insertCell().textContent = vendor.Name || '';
+
+          const actionsCell = row.insertCell();
+          const editButton = document.createElement('button');
+          editButton.textContent = 'Edit';
+          editButton.onclick = () => editVendor(vendor);
+          actionsCell.appendChild(editButton);
+
+          const deleteButton = document.createElement('button');
+          deleteButton.textContent = 'Delete';
+          deleteButton.onclick = () => deleteVendor(vendor.Code);
+          actionsCell.appendChild(deleteButton);
+        });
+      } catch (error) {
+        document.getElementById('vendorsError').textContent = 'Error loading vendors: ' + error.message;
+      } finally {
+        hideLoading();
+      }
+    }
+
+    async function addVendor() {
+      const code = await showMessageBox('Enter Vendor Code:', 'prompt');
+      if (code === null || code.trim() === '') {
+        await showMessageBox('Vendor Code cannot be empty.', 'alert');
+        return;
+      }
+      const trimmedCode = code.trim().toUpperCase();
+
+      const vendors = await fetchData('getVendors'); // Fetch current list to check for duplicates
+
+      if (vendors.some(v => v.Code.toUpperCase() === trimmedCode)) {
+        await showMessageBox(`Vendor Code "${trimmedCode}" already exists.`, 'alert');
+        return;
+      }
+
+      const name = await showMessageBox('Enter Vendor Name:', 'prompt');
+      if (name === null || name.trim() === '') {
+        await showMessageBox('Vendor Name cannot be empty.', 'alert');
+        return;
+      }
+      const trimmedName = name.trim();
+
+      const newVendor = {
+        Code: trimmedCode,
+        Name: trimmedName
+      };
+
+      vendors.push(newVendor); // Add to local array
+      await fetchData('setVendors', vendors); // Send the full updated list to backend
+      await loadVendors(); // Reload vendors from backend to ensure UI is in sync
+      await showMessageBox('Vendor added successfully!', 'alert');
+    }
+
+    async function editVendor(originalVendor) {
+      const newCode = await showMessageBox('Edit Vendor Code:', 'prompt', originalVendor.Code);
+      if (newCode === null || newCode.trim() === '') {
+        await showMessageBox('Vendor Code cannot be empty.', 'alert');
+        return;
+      }
+      const trimmedNewCode = newCode.trim().toUpperCase();
+
+      const vendors = await fetchData('getVendors'); // Fetch current list to check for duplicates
+
+      // Check for duplicate vendor code, excluding the original vendor itself
+      if (vendors.some(v => v.Code.toUpperCase() === trimmedNewCode && v.Code.toUpperCase() !== originalVendor.Code.toUpperCase())) {
+        await showMessageBox(`Vendor Code "${trimmedNewCode}" already exists for another vendor.`, 'alert');
+        return;
+      }
+
+      const newName = await showMessageBox('Edit Vendor Name:', 'prompt', originalVendor.Name);
+      if (newName === null || newName.trim() === '') {
+        await showMessageBox('Vendor Name cannot be empty.', 'alert');
+        return;
+      }
+      const trimmedNewName = newName.trim();
+
+      const updatedVendor = {
+        Code: trimmedNewCode,
+        Name: trimmedNewName
+      };
+
+      const index = vendors.findIndex(v => v.Code.toUpperCase() === originalVendor.Code.toUpperCase());
+      if (index !== -1) {
+        vendors[index] = updatedVendor; // Update local array
+        await fetchData('setVendors', vendors); // Send the full updated list to backend
+        await loadVendors(); // Reload vendors from backend to ensure UI is in sync
+        await showMessageBox('Vendor updated successfully!', 'alert');
+      }
+    }
+
+    async function deleteVendor(vendorCode) {
+      const confirmDelete = await showMessageBox(`Are you sure you want to delete vendor "${vendorCode}"?`, 'confirm');
+      if (confirmDelete) {
+        const vendors = await fetchData('getVendors'); // Fetch current list
+        const updatedVendors = vendors.filter(vendor => vendor.Code !== vendorCode); // Filter local array
+        await fetchData('setVendors', updatedVendors); // Send the filtered list to backend
+        await loadVendors(); // Reload vendors from backend to ensure UI is in sync
+        await showMessageBox('Vendor deleted successfully!', 'alert');
+      }
+    }
+
+    /**
+     * Loads history entries with pagination and optional filtering.
+     * @param {number} page - The page number to load (1-based).
+     */
+    async function loadHistory(page = 1) {
+      showLoading();
+      try {
+        console.log(`loadHistory called for page ${page}`);
+        currentPage = page;
+        const offset = (currentPage - 1) * itemsPerPage;
+
+        const payload = {
+          offset: offset,
+          limit: itemsPerPage,
+          serial: currentHistoryFilter.serial, // Apply current filter
+          part: currentHistoryFilter.part      // Apply current filter
+        };
+
+        // Call the new paginated history function
+        const response = await fetchData('getPaginatedHistory', payload);
+        const history = response.data;
+        totalHistoryEntries = response.total;
+
+        currentDisplayedHistory = history; // Store for export functionality
+        const historyTableBody = document.querySelector('#historyTable tbody');
+        historyTableBody.innerHTML = '';
+
+        if (history && history.length > 0) {
+          history.forEach(entry => { // No need to reverse here, backend already sends most recent first
+            const row = historyTableBody.insertRow();
+            row.innerHTML = [
+              '<td>' + (entry.Serial || '') + '</td>',
+              '<td>' + (entry.Part || '') + '</td>',
+              '<td>' + (entry.Description || '') + '</td>',
+              '<td>' + (entry['Vendor Code'] || '') + '</td>',
+              '<td>' + (entry.Date ? new Date(entry.Date).toLocaleString() : '') + '</td>',
+              '<td>' + (entry.Counter || '') + '</td>',
+              '</tr>'
+            ].join('');
+          });
+        } else {
+          historyTableBody.innerHTML = '<tr><td colspan="6" style="text-align: center;">No history entries found.</td></tr>';
+        }
+
+        updatePaginationControls();
+
+      } catch (error) {
+        document.getElementById('historyError').textContent = 'Error loading history: ' + error.message;
+        console.error('Error loading history:', error);
+      } finally {
+        hideLoading();
+      }
+    }
+
+    /**
+     * Updates the state of pagination buttons and page information display.
+     */
+    function updatePaginationControls() {
+      const totalPages = Math.ceil(totalHistoryEntries / itemsPerPage);
+      document.getElementById('historyPageInfo').textContent = `Page ${currentPage} of ${totalPages || 1}`;
+      document.getElementById('prevHistoryPage').disabled = currentPage <= 1;
+      document.getElementById('nextHistoryPage').disabled = currentPage >= totalPages;
+    }
+
+    /**
+     * Navigates to the previous page of history.
+     */
+    function previousHistoryPage() {
+      if (currentPage > 1) {
+        loadHistory(currentPage - 1);
+      }
+    }
+
+    /**
+     * Navigates to the next page of history.
+     */
+    function nextHistoryPage() {
+      const totalPages = Math.ceil(totalHistoryEntries / itemsPerPage);
+      if (currentPage < totalPages) {
+        loadHistory(currentPage + 1);
+      }
+    }
+
+    /**
+     * Applies search filters to the history and reloads the first page.
+     */
+    async function filterHistory() {
+      const serialSearchTerm = document.getElementById('historySerialSearch').value.trim().toLowerCase();
+      const partSearchTerm = document.getElementById('historyPartSearch').value.trim().toLowerCase();
+
+      currentHistoryFilter.serial = serialSearchTerm;
+      currentHistoryFilter.part = partSearchTerm;
+
+      // Reset to first page when applying a new filter
+      await loadHistory(1);
+    }
+
+    /**
+     * Exports history data to an Excel (CSV) file.
+     * @param {boolean} filtered - True to export currently filtered data, false to export all history.
+     */
+    async function exportHistoryToExcel(filtered) {
+      showLoading();
+      try {
+        let dataToExport = [];
+        if (filtered) {
+          // If filtered export, fetch ALL filtered data, not just the currently displayed page
+          const serialSearchTerm = document.getElementById('historySerialSearch').value.trim().toLowerCase();
+          const partSearchTerm = document.getElementById('historyPartSearch').value.trim().toLowerCase();
+          dataToExport = await fetchData('getFilteredHistory', { // Use getFilteredHistory to get all filtered results
+            serial: serialSearchTerm,
+            part: partSearchTerm
+          });
+        } else {
+          // If "Export All" is clicked, fetch all history
+          dataToExport = await fetchData('getHistory'); // Use getHistory to get all results
+        }
+        
+        if (!dataToExport || dataToExport.length === 0) {
+          showMessageBox('No data to export.', 'alert');
+          return;
+        }
+
+        performExport(dataToExport); // This function remains the same
+      } catch (error) {
+        document.getElementById('historyError').textContent = 'Error fetching history for export: ' + error.message;
+        console.error('Error fetching history for export:', error);
+      } finally {
+        hideLoading();
+      }
+    }
+
+    function performExport(data) {
+      // Get headers from the first object
+      const headers = Object.keys(data[0]);
+      let csvContent = headers.map(header => `"${header}"`).join(',') + '\n';
+
+      data.forEach(row => {
+        const rowValues = headers.map(header => {
+          let value = row[header] ?? '';
+          // Special handling for Date column to ensure consistent format in CSV
+          if (header === 'Date' && value) {
+            value = new Date(value).toLocaleString(); // Format date for CSV
+          }
+          // Escape double quotes by doubling them
+          if (typeof value === 'string') {
+            value = value.replace(/"/g, '""');
+          }
+          return `"${value}"`;
+        });
+        csvContent += rowValues.join(',') + '\n';
+      });
+
+      const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+      const link = document.createElement('a');
+      const url = URL.createObjectURL(blob);
+      link.setAttribute('href', url);
+      link.setAttribute('download', 'JHM_History.csv');
+      link.style.visibility = 'hidden';
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      showMessageBox('History exported to Excel (CSV) successfully!', 'alert');
+    }
+
+
+    // Load initial data on page load
+    async function initialize() {
+      showLoading();
+      try {
+        console.log("initialize called");
+        await getTeslaLogoBase64(); 
+        // Modified: fetch counter directly and then update display
+        const counterResponse = await fetchData('getCounter');
+        if (counterResponse && counterResponse.counter !== undefined) {
+            document.getElementById('currentDailyCounterDisplay').textContent = counterResponse.counter;
+        } else {
+            document.getElementById('currentDailyCounterDisplay').textContent = 'N/A';
+        }
+        
+        await Promise.all([
+          loadParts(), 
+          loadVendors()
+        ]);
+      }
+      catch (error) {
+        console.error('Initialization error:', error);
+        document.getElementById('generateError').textContent = 'Initialization failed: ' + error.message;
+      } finally {
+        hideLoading();
+      }
+    }
+
+    checkLoginStatus();
+  </script>
 </body>
 </html>
