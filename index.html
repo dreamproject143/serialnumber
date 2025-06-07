@@ -596,7 +596,13 @@
         const counterResponse = await callGAS('getCounter');
         let currentCounter = counterResponse.counter;
 
-        const date = Utilities.formatDate(new Date(), Session.getScriptTimeZone(), 'yyMMdd');
+        // Use standard JavaScript Date methods for formatting
+        const now = new Date();
+        const year = String(now.getFullYear()).slice(-2); // Last two digits of year
+        const month = String(now.getMonth() + 1).padStart(2, '0'); // Month (0-11) + 1, pad with 0
+        const day = String(now.getDate()).padStart(2, '0'); // Day of month, pad with 0
+        const date = `${year}${month}${day}`; // Format as yyMMdd
+
         const serials = [];
         const historyEntries = [];
 
@@ -611,7 +617,7 @@
             Part: selectedPart['Part Number'],
             Description: selectedPart.Description,
             'Vendor Code': selectedPart['Vendor Code'],
-            Date: new Date().toLocaleDateString('en-US'),
+            Date: new Date().toLocaleDateString('en-US'), // Keep local date string for history
             Counter: currentCounter
           });
           currentCounter++; // Increment for next serial
