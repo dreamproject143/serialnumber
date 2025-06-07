@@ -6,9 +6,11 @@
   <title>JHM Serial Number Generator</title>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcode.js/1.0.0/qrcode.min.js"></script> <!-- QR Code Library -->
+  <!-- Tailwind CSS CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Font Awesome for icons (if used) -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <!-- Google Fonts for Montserrat and Inter -->
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
   <style>
     /* Merged and adjusted styles from previous versions for a unified look */
@@ -31,12 +33,29 @@
       box-shadow: 0 4px 10px rgba(0,0,0,0.1);
       padding: 20px;
     }
-    h1 {
-      text-align: center;
-      color: #1976d2; /* Deep blue */
-      margin-bottom: 25px;
-      font-family: 'Montserrat', sans-serif; /* Apply Montserrat to heading */
+    .header { /* Style for the new header div containing h1 and logo */
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 30px;
+      border-bottom: 1px solid #eee;
+      padding-bottom: 20px;
     }
+    .header h1 { /* Specific style for h1 inside the header */
+      text-align: left; /* Align to left within the header flex container */
+      color: #1976d2; /* Deep blue */
+      margin: 0; /* Remove default margins as flex handles spacing */
+      font-family: 'Inter', sans-serif; /* Changed to Inter for consistency */
+      font-size: 2.25rem; /* text-4xl */
+      font-weight: 700; /* font-bold */
+    }
+    .header img.logo { /* Specific style for img inside the header */
+      height: 80px; /* Adjust size as needed */
+      width: 80px;
+      border-radius: 8px; /* Rounded corners for logo */
+      object-fit: contain;
+    }
+
     .tabs {
       display: flex;
       gap: 10px;
@@ -522,13 +541,16 @@
         <label for="password">Password</label>
         <input type="password" id="password" />
       </div>
-      <button onclick="handleLogin()">Login</button>
+      <button id="loginButton">Login</button> <!-- Changed to id for event listener -->
       <div id="loginError" class="error"></div>
     </div>
   </div>
 
   <div class="container" id="mainContent" style="display:none;">
-    <h1>JHM Serial Number Generator</h1>
+    <div class="header"> <!-- Added a header div to group H1 and logo -->
+      <h1>JHM Serial Number Generator</h1>
+      <img id="logo" src="" alt="JHM Logo" class="logo"> <!-- Removed inline Tailwind classes, added 'logo' class -->
+    </div>
 
     <div class="tabs">
       <div class="tab active" data-tab="generate">Generate Labels</div>
@@ -536,7 +558,7 @@
       <div class="tab" data-tab="parts">Part Manager</div>
       <div class="tab" data-tab="vendors">Vendor Manager</div>
       <div class="tab" data-tab="history">History Viewer</div>
-      <button onclick="logout()" style="background-color: #f44336; margin-left: auto;">Logout</button>
+      <button id="logoutButton" style="background-color: #f44336; margin-left: auto;">Logout</button> <!-- Changed to id for event listener -->
     </div>
     
     <div id="generate" class="tab-content active">
@@ -556,9 +578,9 @@
         <label for="currentDailyCounterDisplay">Current Daily Counter:</label>
         <span id="currentDailyCounterDisplay">Loading...</span>
       </div>
-      <button onclick="generateLabels()">Generate Labels</button>
-      <button onclick="exportToPDF()">Export to PDF</button>
-      <button onclick="printLabels()">Print Labels</button>
+      <button id="generateLabelsButton">Generate Labels</button> <!-- Changed to id for event listener -->
+      <button id="exportToPDFButton">Export to PDF</button> <!-- Changed to id for event listener -->
+      <button id="printLabelsButton">Print Labels</button> <!-- Changed to id for event listener -->
       <div class="preview-area" id="previewArea"></div>
       <div id="generateError" class="error"></div>
     </div>
@@ -568,14 +590,14 @@
         <label for="serialSearch">Serial Number</label>
         <input type="text" id="serialSearch" placeholder="e.g., S:AC82525014900001" />
       </div>
-      <button onclick="reprintLabel()">Reprint Label</button>
-      <button onclick="printReprintLabel()">Print Label</button>
+      <button id="reprintLabelButton">Reprint Label</button> <!-- Changed to id for event listener -->
+      <button id="printReprintLabelButton">Print Label</button> <!-- Changed to id for event listener -->
       <div class="preview-area" id="reprintPreview"></div>
       <div id="reprintError" class="error"></div>
     </div>
     
     <div id="parts" class="tab-content">
-      <button onclick="addPart()">Add Part</button>
+      <button id="addPartButton">Add Part</button> <!-- Changed to id for event listener -->
       <table class="table" id="partsTable">
         <thead>
           <tr>
@@ -592,7 +614,7 @@
     </div>
     
     <div id="vendors" class="tab-content">
-      <button onclick="addVendor()">Add Vendor</button>
+      <button id="addVendorButton">Add Vendor</button> <!-- Changed to id for event listener -->
       <table class="table" id="vendorsTable">
         <thead>
           <tr>
@@ -615,9 +637,9 @@
         <label for="historyPartSearch">Search by Part Number:</label>
         <input type="text" id="historyPartSearch" placeholder="Enter full or partial part number" />
       </div>
-      <button onclick="filterHistory()">Search History</button>
-      <button onclick="exportHistoryToExcel(true)">Export Filtered to Excel</button>
-      <button onclick="exportHistoryToExcel(false)">Export All to Excel</button>
+      <button id="filterHistoryButton">Search History</button> <!-- Changed to id for event listener -->
+      <button id="exportFilteredHistoryButton">Export Filtered to Excel</button> <!-- Changed to id for event listener -->
+      <button id="exportAllHistoryButton">Export All to Excel</button> <!-- Changed to id for event listener -->
       <table class="table" id="historyTable">
         <thead>
           <tr>
@@ -632,9 +654,9 @@
         <tbody></tbody>
       </table>
       <div class="pagination-controls" style="display: flex; justify-content: center; align-items: center; gap: 15px; margin-top: 20px;">
-        <button id="prevHistoryPage" onclick="previousHistoryPage()" disabled>Previous</button>
+        <button id="prevHistoryPage" disabled>Previous</button> <!-- Changed to id for event listener -->
         <span id="historyPageInfo">Page 1 of 1</span>
-        <button id="nextHistoryPage" onclick="nextHistoryPage()" disabled>Next</button>
+        <button id="nextHistoryPage" disabled>Next</button> <!-- Changed to id for event listener -->
       </div>
       <div id="historyError" class="error"></div>
     </div>
@@ -650,6 +672,9 @@
       <button id="messageBoxAlert" style="display:none;">OK</button>
     </div>
   </div>
+
+  <!-- QR Code Library - Moved to end of body to ensure it's loaded before script execution -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcode.js/1.0.0/qrcode.min.js"></script>
 
   <script>
     console.log("Script loaded successfully");
@@ -714,7 +739,7 @@
             if (data && data !== 'ERROR_LOADING_LOGO') {
                 TESLA_LOGO_BASE64 = data;
                 // Update the logo image src in the main content header
-                const logoImg = document.querySelector('.container .header img');
+                const logoImg = document.getElementById('logo'); // Use getElementById for direct access
                 if (logoImg) {
                     logoImg.src = TESLA_LOGO_BASE64;
                 } else {
@@ -723,7 +748,7 @@
             } else {
                 console.warn("Failed to load logo from Drive, using placeholder.");
                 // Update the logo image src in the main content header to placeholder
-                const logoImg = document.querySelector('.container .header img');
+                const logoImg = document.getElementById('logo');
                 if (logoImg) {
                     logoImg.src = 'https://placehold.co/100x100?text=Logo'; // Fallback
                 } else {
@@ -733,7 +758,7 @@
         } catch (error) {
             console.error("Failed to load logo:", error);
             // Update the logo image src in the main content header to placeholder on error
-            const logoImg = document.querySelector('.container .header img');
+            const logoImg = document.getElementById('logo');
             if (logoImg) {
                 logoImg.src = 'https://placehold.co/100x100?text=Logo'; // Fallback
             } else {
@@ -891,6 +916,14 @@
     }
 
     async function generateLabels() {
+      // Add a check to ensure QRCode is defined
+      if (typeof QRCode === 'undefined') {
+        const errorMsg = 'Error: QRCode library is not loaded. Please try again after the page fully loads.';
+        console.error(errorMsg);
+        document.getElementById('generateError').textContent = errorMsg;
+        hideLoading();
+        return;
+      }
       showLoading();
       try {
         console.log("generateLabels called");
@@ -958,7 +991,7 @@
           qrCodeContainer.className = 'qr-code-container'; // Apply styling class
           labelCard.appendChild(qrCodeContainer);
 
-          // Generate QR code onto the canvas element *inside* the container
+          // Generate QR code into the container div
           const qrData = `P:${entry.Part}\nS:${entry.Serial}`;
           new QRCode(qrCodeContainer, { // Pass the div container here
             text: qrData,
@@ -1002,6 +1035,14 @@
     }
 
     async function reprintLabel() {
+      // Add a check to ensure QRCode is defined
+      if (typeof QRCode === 'undefined') {
+        const errorMsg = 'Error: QRCode library is not loaded. Please try again after the page fully loads.';
+        console.error(errorMsg);
+        document.getElementById('reprintError').textContent = errorMsg;
+        hideLoading();
+        return;
+      }
       showLoading();
       try {
         const serial = document.getElementById('serialSearch').value.trim();
@@ -1027,7 +1068,7 @@
           qrCodeContainer.className = 'qr-code-container'; // Apply styling class
           labelCard.appendChild(qrCodeContainer);
 
-          // Generate QR code onto the canvas element *inside* the container
+          // Generate QR code into the container div
           const qrData = `P:${entry.Part}\nS:${entry.Serial}`;
           new QRCode(qrCodeContainer, { // Pass the div container here
             text: qrData,
@@ -1676,7 +1717,26 @@
       }
     }
 
-    checkLoginStatus();
+    // Call checkLoginStatus and attach event listeners only after the entire page is loaded
+    window.onload = () => {
+        checkLoginStatus();
+
+        // Attach event listeners to buttons after the DOM is fully loaded
+        document.getElementById('loginButton').addEventListener('click', handleLogin);
+        document.getElementById('logoutButton').addEventListener('click', logout);
+        document.getElementById('generateLabelsButton').addEventListener('click', generateLabels);
+        document.getElementById('exportToPDFButton').addEventListener('click', exportToPDF);
+        document.getElementById('printLabelsButton').addEventListener('click', printLabels);
+        document.getElementById('reprintLabelButton').addEventListener('click', reprintLabel);
+        document.getElementById('printReprintLabelButton').addEventListener('click', printReprintLabel);
+        document.getElementById('addPartButton').addEventListener('click', addPart);
+        document.getElementById('addVendorButton').addEventListener('click', addVendor);
+        document.getElementById('filterHistoryButton').addEventListener('click', filterHistory);
+        document.getElementById('exportFilteredHistoryButton').addEventListener('click', () => exportHistoryToExcel(true));
+        document.getElementById('exportAllHistoryButton').addEventListener('click', () => exportHistoryToExcel(false));
+        document.getElementById('prevHistoryPage').addEventListener('click', previousHistoryPage);
+        document.getElementById('nextHistoryPage').addEventListener('click', nextHistoryPage);
+    };
   </script>
 </body>
 </html>
