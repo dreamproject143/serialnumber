@@ -624,21 +624,54 @@
   <script>
     console.log("Script loaded successfully");
     var jsPDF = window.jspdf.jsPDF;
-    // Changed to store only the Google Drive File ID
-    var TESLA_LOGO_FILE_ID = '1en7umlfHN1huVyIsNNib8FzzJdPaiDvP'; 
+    // IMPORTANT: Replace 'YOUR_DEPLOYED_WEB_APP_URL' with the actual URL you got after deploying your GAS project.
+    const GAS_WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbxY_gnIJJdcq2Ut9_iJEmdl-sIZp0aj3GynM4gdVINiKdlJoYOR7inEynqnirXa54-PIQ/exec'; 
+    var TESLA_LOGO_FILE_ID = '1en7umlfHN1huVyIsNNib8FzzJdPaiDvX'; // This ID is from your previous code and refers to a Google Drive file.
     var TESLA_LOGO_BASE64 = ''; 
     var allParts = [];
     var currentDisplayedHistory = []; // To store currently displayed history for export
-
-    // Define your deployed Google Apps Script Web App URL here
-    // IMPORTANT: This URL has been updated with the one you provided.
-    const GAS_WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbyxFkNJeFdLx9rjFJH3fSOEFNK5UIRwN1ZjvfScvAMmV3Hfcl-4KiCBmO-aeGrehivh/exec';
 
     // Pagination variables for history tab
     var currentPage = 1;
     var itemsPerPage = 20;
     var totalHistoryEntries = 0;
     var currentHistoryFilter = { serial: '', part: '' }; // Store current filter for pagination
+
+    /**
+     * Generic asynchronous function to call Google Apps Script backend.
+     * It handles the fetch request, loading indicators, and error handling.
+     * @param {string} action - The name of the GAS function to call (e.g., 'getParts').
+     * @param {Object} payload - The data to send to the GAS function. Can be an empty object {}.
+     * @returns {Promise<Object>} A promise that resolves with the response data from GAS.
+     */
+    async function callGAS(action, payload) {
+      showLoading(); // Show loading overlay
+      try {
+        const response = await fetch(GAS_WEB_APP_URL, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ action, payload }),
+        });
+
+        if (!response.ok) {
+          // If the HTTP response status is not OK (e.g., 400, 500), parse error from body
+          const errorData = await response.json();
+          throw new Error(errorData.error || `HTTP error! status: ${response.status}`);
+        }
+
+        const data = await response.json();
+        return data; // Return the parsed JSON data from GAS
+      } catch (error) {
+        console.error(`Error calling GAS function '${action}':`, error);
+        // Display a user-friendly message
+        await showMessageBox(`Error: ${error.message}`, 'alert');
+        throw error; // Re-throw to allow specific error handling in calling functions
+      } finally {
+        hideLoading(); // Hide loading overlay regardless of success or failure
+      }
+    }
 
     function handleLogin() {
       const usernameInput = document.getElementById('username').value;
@@ -677,26 +710,17 @@
 
     async function getTeslaLogoBase64() {
         try {
-            // Use fetch to call the Google Apps Script backend function
-            const response = await fetch(GAS_WEB_APP_URL, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ action: 'getLogoBase64FromDrive', payload: TESLA_LOGO_FILE_ID })
-            });
-            const data = await response.json();
-
-            if (data.error) {
-                console.error('Backend reported error loading logo from Drive:', data.error);
-                TESLA_LOGO_BASE64 = 'https://placehold.co/100x100/CCCCCC/333333?text=Logo'; // Fallback
-            } else if (data === 'ERROR_LOADING_LOGO') { // Check for specific error string returned by backend
+            // Call the Google Apps Script backend function to get the Base64 data using callGAS
+            const data = await callGAS('getLogoBase64FromDrive', TESLA_LOGO_FILE_ID);
+            if (data === 'ERROR_LOADING_LOGO') {
                 console.error('Backend reported error loading logo from Drive. Falling back to placeholder.');
                 TESLA_LOGO_BASE64 = 'https://placehold.co/100x100/CCCCCC/333333?text=Logo'; // Fallback
             } else {
                 TESLA_LOGO_BASE64 = data; // Set the Base64 string received from backend
             }
         } catch (error) {
-            console.error('Error fetching logo from backend:', error);
-            TESLA_LOGO_BASE64 = 'https://placehold.co/100x100/CCCCCC/333333?text=Logo'; // Fallback on network/parsing error
+            console.error('Unexpected error in getTeslaLogoBase64 (frontend):', error);
+            TESLA_LOGO_BASE64 = 'https://placehold.co/100x100/CCCCCC/333333?text=Logo'; // Fallback for unexpected frontend issues
         }
     }
 
@@ -751,6 +775,7 @@
         resolvePromise(messageInput.value);
       };
 
+      // Clear previous event listeners to prevent multiple bindings
       confirmBtn.onclick = null;
       cancelBtn.onclick = null;
       alertBtn.onclick = null;
@@ -771,7 +796,7 @@
         cancelBtn.style.display = 'inline-block';
         confirmBtn.onclick = handlePrompt;
         cancelBtn.onclick = handleCancel;
-      } else {
+      } else { // 'alert' type
         alertBtn.textContent = 'OK';
         alertBtn.style.display = 'inline-block';
         alertBtn.onclick = handleAlert;
@@ -802,38 +827,7 @@
       });
     });
 
-    /**
-     * Generic function to make fetch calls to the Apps Script Web App.
-     * @param {string} action - The name of the Google Apps Script function to call.
-     * @param {Object} [payload={}] - The data to send to the backend function.
-     * @returns {Promise<any>} A promise that resolves with the backend's response data.
-     */
-    async function fetchData(action, payload = {}) {
-        try {
-            const response = await fetch(GAS_WEB_APP_URL, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ action: action, payload: payload })
-            });
-
-            if (!response.ok) {
-                const errorText = await response.text();
-                throw new Error(`HTTP error! status: ${response.status}, message: ${errorText}`);
-            }
-
-            const data = await response.json();
-
-            if (data.error) {
-                throw new Error(data.error);
-            }
-            return data;
-        } catch (error) {
-            console.error('Error in fetchData:', error);
-            throw error; // Re-throw to be caught by specific function handlers
-        }
-    }
+    // Removed the fetchData function as it's replaced by callGAS directly
 
     async function generateLabels() {
       showLoading();
@@ -864,7 +858,7 @@
         var dayOfYear = Math.floor((now - new Date(now.getFullYear(), 0, 0)) / 86400000).toString();
         dayOfYear = ("000" + dayOfYear).slice(-3);
 
-        const counterData = await fetchData('getCounter');
+        const counterData = await callGAS('getCounter', {}); // Call GAS for counter
         let counter = counterData.counter;
 
         const entries = Array(quantity).fill().map(function(_, i) {
@@ -880,8 +874,8 @@
           };
         });
 
-        await fetchData('setHistory', { entries: entries });
-        await fetchData('incrementCounter', { quantity: quantity });
+        await callGAS('setHistory', { entries: entries }); // Call GAS to set history
+        await callGAS('incrementCounter', { quantity: quantity }); // Call GAS to increment counter
 
         var previewArea = document.getElementById('previewArea');
         previewArea.innerHTML = '';
@@ -927,7 +921,7 @@
           return hideLoading();
         }
 
-        const entry = await fetchData('getSerialById', { serial: serial });
+        const entry = await callGAS('getSerialById', { serial: serial }); // Call GAS to get serial by ID
 
         if (entry) {
           reprintErrorDiv.textContent = '';
@@ -1145,7 +1139,7 @@
       showLoading();
       try {
         console.log("loadParts called");
-        const parts = await fetchData('getParts');
+        const parts = await callGAS('getParts', {}); // Call GAS to get parts
         allParts = parts;
         const partsTableBody = document.querySelector('#partsTable tbody');
         partsTableBody.innerHTML = '';
@@ -1206,17 +1200,19 @@
       }
       const trimmedVendorCode = vendorCode.trim().toUpperCase();
 
+      // MODIFIED: Removed defaultValue for 'confirm' type as it's not used for pre-selection
       const isActive = await showMessageBox('Is this part Active? (Yes/No)', 'confirm');
 
       const newPart = {
         'Part Number': trimmedPartNumber,
         Description: description.trim(),
         'Vendor Code': trimmedVendorCode,
+        // MODIFIED: Convert boolean result from showMessageBox to 'Yes'/'No' string
         Active: isActive ? 'Yes' : 'No'
       };
 
       allParts.push(newPart); // Add to local array
-      await fetchData('setParts', allParts); // Send the full updated list to backend
+      await callGAS('setParts', allParts); // Send the full updated list to backend
       await loadParts(); // Reload parts from backend to ensure UI is in sync
       await showMessageBox('Part added successfully!', 'alert');
     }
@@ -1245,19 +1241,21 @@
       }
       const trimmedNewVendorCode = newVendorCode.trim().toUpperCase();
 
+      // MODIFIED: Removed defaultValue for 'confirm' type as it's not used for pre-selection
       const newIsActive = await showMessageBox('Is this part Active? (Yes/No)', 'confirm');
 
       const updatedPart = {
         'Part Number': trimmedNewPartNumber,
         Description: newDescription.trim(),
         'Vendor Code': trimmedNewVendorCode,
+        // MODIFIED: Convert boolean result from showMessageBox to 'Yes'/'No' string
         Active: newIsActive ? 'Yes' : 'No'
       };
 
       const index = allParts.findIndex(p => p['Part Number'].toUpperCase() === originalPart['Part Number'].toUpperCase());
       if (index !== -1) {
         allParts[index] = updatedPart; // Update local array
-        await fetchData('setParts', allParts); // Send the full updated list to backend
+        await callGAS('setParts', allParts); // Send the full updated list to backend
         await loadParts(); // Reload parts from backend to ensure UI is in sync
         await showMessageBox('Part updated successfully!', 'alert');
       }
@@ -1267,7 +1265,7 @@
       const confirmDelete = await showMessageBox(`Are you sure you want to delete part "${partNumber}"?`, 'confirm');
       if (confirmDelete) {
         allParts = allParts.filter(part => part['Part Number'] !== partNumber); // Filter local array
-        await fetchData('setParts', allParts); // Send the filtered list to backend
+        await callGAS('setParts', allParts); // Send the filtered list to backend
         await loadParts(); // Reload parts from backend to ensure UI is in sync
         await showMessageBox('Part deleted successfully!', 'alert');
       }
@@ -1277,7 +1275,7 @@
       showLoading();
       try {
         console.log("loadVendors called");
-        const vendors = await fetchData('getVendors');
+        const vendors = await callGAS('getVendors', {}); // Call GAS to get vendors
         const vendorsTableBody = document.querySelector('#vendorsTable tbody');
         vendorsTableBody.innerHTML = '';
 
@@ -1312,7 +1310,7 @@
       }
       const trimmedCode = code.trim().toUpperCase();
 
-      const vendors = await fetchData('getVendors'); // Fetch current list to check for duplicates
+      const vendors = await callGAS('getVendors', {}); // Fetch current list to check for duplicates
 
       if (vendors.some(v => v.Code.toUpperCase() === trimmedCode)) {
         await showMessageBox(`Vendor Code "${trimmedCode}" already exists.`, 'alert');
@@ -1332,7 +1330,7 @@
       };
 
       vendors.push(newVendor); // Add to local array
-      await fetchData('setVendors', vendors); // Send the full updated list to backend
+      await callGAS('setVendors', vendors); // Send the full updated list to backend
       await loadVendors(); // Reload vendors from backend to ensure UI is in sync
       await showMessageBox('Vendor added successfully!', 'alert');
     }
@@ -1345,7 +1343,7 @@
       }
       const trimmedNewCode = newCode.trim().toUpperCase();
 
-      const vendors = await fetchData('getVendors'); // Fetch current list to check for duplicates
+      const vendors = await callGAS('getVendors', {}); // Fetch current list to check for duplicates
 
       // Check for duplicate vendor code, excluding the original vendor itself
       if (vendors.some(v => v.Code.toUpperCase() === trimmedNewCode && v.Code.toUpperCase() !== originalVendor.Code.toUpperCase())) {
@@ -1368,7 +1366,7 @@
       const index = vendors.findIndex(v => v.Code.toUpperCase() === originalVendor.Code.toUpperCase());
       if (index !== -1) {
         vendors[index] = updatedVendor; // Update local array
-        await fetchData('setVendors', vendors); // Send the full updated list to backend
+        await callGAS('setVendors', vendors); // Send the full updated list to backend
         await loadVendors(); // Reload vendors from backend to ensure UI is in sync
         await showMessageBox('Vendor updated successfully!', 'alert');
       }
@@ -1377,9 +1375,9 @@
     async function deleteVendor(vendorCode) {
       const confirmDelete = await showMessageBox(`Are you sure you want to delete vendor "${vendorCode}"?`, 'confirm');
       if (confirmDelete) {
-        const vendors = await fetchData('getVendors'); // Fetch current list
+        const vendors = await callGAS('getVendors', {}); // Fetch current list
         const updatedVendors = vendors.filter(vendor => vendor.Code !== vendorCode); // Filter local array
-        await fetchData('setVendors', updatedVendors); // Send the filtered list to backend
+        await callGAS('setVendors', updatedVendors); // Send the filtered list to backend
         await loadVendors(); // Reload vendors from backend to ensure UI is in sync
         await showMessageBox('Vendor deleted successfully!', 'alert');
       }
@@ -1403,8 +1401,8 @@
           part: currentHistoryFilter.part      // Apply current filter
         };
 
-        // Call the new paginated history function
-        const response = await fetchData('getPaginatedHistory', payload);
+        // Call the new paginated history function using callGAS
+        const response = await callGAS('getPaginatedHistory', payload);
         const history = response.data;
         totalHistoryEntries = response.total;
 
@@ -1494,13 +1492,13 @@
           // If filtered export, fetch ALL filtered data, not just the currently displayed page
           const serialSearchTerm = document.getElementById('historySerialSearch').value.trim().toLowerCase();
           const partSearchTerm = document.getElementById('historyPartSearch').value.trim().toLowerCase();
-          dataToExport = await fetchData('getFilteredHistory', { // Use getFilteredHistory to get all filtered results
+          dataToExport = await callGAS('getFilteredHistory', { // Use getFilteredHistory to get all filtered results
             serial: serialSearchTerm,
             part: partSearchTerm
           });
         } else {
           // If "Export All" is clicked, fetch all history
-          dataToExport = await fetchData('getHistory'); // Use getHistory to get all results
+          dataToExport = await callGAS('getHistory', {}); // Use getHistory to get all results
         }
         
         if (!dataToExport || dataToExport.length === 0) {
@@ -1557,17 +1555,24 @@
       try {
         console.log("initialize called");
         await getTeslaLogoBase64(); 
-        // Modified: fetch counter directly and then update display
-        const counterResponse = await fetchData('getCounter');
-        if (counterResponse && counterResponse.counter !== undefined) {
-            document.getElementById('currentDailyCounterDisplay').textContent = counterResponse.counter;
-        } else {
-            document.getElementById('currentDailyCounterDisplay').textContent = 'N/A';
-        }
-        
         await Promise.all([
           loadParts(), 
-          loadVendors()
+          loadVendors(), 
+          // loadHistory() is now called when the history tab is clicked or explicitly for "Export All"
+          // Replaced google.script.run for getCounter with callGAS
+          (async () => {
+              try {
+                  const response = await callGAS('getCounter', {});
+                  if (response && response.counter !== undefined) {
+                      document.getElementById('currentDailyCounterDisplay').textContent = response.counter;
+                  } else {
+                      document.getElementById('currentDailyCounterDisplay').textContent = 'N/A';
+                  }
+              } catch (error) {
+                  console.error("Error loading counter:", error);
+                  document.getElementById('currentDailyCounterDisplay').textContent = 'Error';
+              }
+          })()
         ]);
       }
       catch (error) {
