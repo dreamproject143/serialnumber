@@ -9,85 +9,11 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcode.js/1.0.0/qrcode.min.js"></script> <!-- QR Code Library -->
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
   <style>
-    /* Custom styles for the message box */
-    #messageBox {
-      position: fixed;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      background-color: #fff;
-      padding: 20px;
-      border-radius: 8px;
-      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
-      z-index: 1000;
-      text-align: center;
-      max-width: 90%;
-      min-width: 300px;
-    }
-
-    #messageBox.alert {
-        border: 2px solid #f97316; /* Orange border for alerts */
-    }
-
-    #messageBox.error {
-        border: 2px solid #ef4444; /* Red border for errors */
-    }
-
-    #messageBox.success {
-        border: 2px solid #22c55e; /* Green border for success */
-    }
-
-    #messageBox button {
-      margin-top: 15px;
-      padding: 8px 15px;
-      background-color: #3b82f6;
-      color: white;
-      border: none;
-      border-radius: 5px;
-      cursor: pointer;
-      font-size: 1rem;
-    }
-
-    #messageBox button:hover {
-      background-color: #2563eb;
-    }
-
-    #overlay {
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background-color: rgba(0, 0, 0, 0.5);
-        z-index: 999;
-    }
-    
-    /* Loading Spinner Styles */
-    #loadingSpinner {
-        position: fixed;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-        z-index: 1001; /* Above message box */
-        display: none; /* Hidden by default */
-        width: 60px;
-        height: 60px;
-        border: 8px solid #f3f3f3;
-        border-top: 8px solid #3b82f6;
-        border-radius: 50%;
-        animation: spin 1s linear infinite;
-    }
-
-    @keyframes spin {
-        0% { transform: rotate(0deg); }
-        100% { transform: rotate(360deg); }
-    }
-
-    /* General container and font styles */
+    /* Merged and adjusted styles from previous versions for a unified look */
     body {
-      font-family: 'Inter', sans-serif; /* Using Inter font */
+      font-family: 'Inter', 'Segoe UI', Roboto, 'Helvetica Neue', Arial, 'Noto Sans', sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
       margin: 0;
       padding: 20px;
       background-color: #f4f4f4;
@@ -103,410 +29,799 @@
       background-color: #fff;
       border-radius: 10px;
       box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-      padding: 30px;
+      padding: 20px;
     }
-    .header {
+    h1 {
+      text-align: center;
+      color: #1976d2; /* Deep blue */
+      margin-bottom: 25px;
+      font-family: 'Montserrat', sans-serif; /* Apply Montserrat to heading */
+    }
+    .tabs {
       display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 30px;
-      border-bottom: 1px solid #eee;
-      padding-bottom: 20px;
+      gap: 10px;
+      margin-bottom: 2px; /* Adjusted from 2 to 2px for consistency */
+      border-bottom: 2px solid #eee;
     }
-    .header h1 {
-      font-size: 2.25rem; /* text-4xl */
-      font-weight: 700; /* font-bold */
-      color: #1a202c; /* gray-900 */
-      margin: 0;
-    }
-    .tab-buttons {
-      display: flex;
-      margin-bottom: 20px;
-      border-bottom: 1px solid #e2e8f0; /* gray-300 */
-    }
-    .tab-button {
-      padding: 12px 20px;
+    .tab {
+      padding: 12px 25px;
+      background: #eee;
       cursor: pointer;
-      font-weight: 500; /* font-medium */
-      color: #4a5568; /* gray-600 */
-      border: none;
-      background-color: transparent;
-      border-bottom: 2px solid transparent;
+      border-radius: 8px 8px 0 0;
+      font-weight: bold;
+      color: #555;
       transition: all 0.3s ease;
     }
-    .tab-button:hover {
-      color: #2b6cb0; /* blue-700 */
+    .tab.active {
+      background: #fff;
+      border-bottom: 3px solid #1976d2; /* Highlight active tab with blue border */
+      color: #1976d2; /* Deep blue */
+      box-shadow: 0 -2px 5px rgba(0,0,0,0.05);
     }
-    .tab-button.active {
-      color: #2b6cb0; /* blue-700 */
-      border-bottom-color: #2b6cb0;
-      font-weight: 600; /* font-semibold */
+    .tab:hover:not(.active) {
+      background: #e0e0e0;
+      color: #333; /* Slightly darker text on hover */
     }
     .tab-content {
-      padding-top: 20px;
+      display: none;
+      padding: 20px;
+      border-radius: 0 8px 8px 8px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+    }
+    .tab-content.active {
+      display: block;
     }
     .form-group {
-      margin-bottom: 20px;
+      margin-bottom: 18px;
     }
-    .form-group label {
+    label {
       display: block;
       margin-bottom: 8px;
-      font-weight: 600; /* font-semibold */
-      color: #2d3748; /* gray-700 */
+      font-weight: bold;
+      color: #333;
     }
-    .form-group input[type="text"],
-    .form-group input[type="number"],
-    .form-group select {
-      width: 100%;
-      padding: 10px 12px;
-      border: 1px solid #cbd5e0; /* gray-400 */
-      border-radius: 6px; /* rounded-md */
-      box-sizing: border-box;
-      font-size: 1rem;
-      color: #2d3748; /* gray-700 */
-      transition: border-color 0.2s;
-    }
-    .form-group input[type="text"]:focus,
-    .form-group input[type="number"]:focus,
-    .form-group select:focus {
-      outline: none;
-      border-color: #4299e1; /* blue-500 */
-      box-shadow: 0 0 0 3px rgba(66, 153, 225, 0.5);
-    }
-    .btn {
-      padding: 10px 20px;
-      border: none;
+    input, select {
+      width: calc(100% - 20px); /* Adjust for padding */
+      padding: 10px;
+      border: 1px solid #ccc;
       border-radius: 6px;
-      cursor: pointer;
-      font-size: 1rem;
-      font-weight: 600;
-      transition: background-color 0.2s, transform 0.1s;
+      font-size: 16px;
+      box-sizing: border-box; /* Include padding in width */
+      transition: border-color 0.2s ease, box-shadow 0.2s ease; /* Smooth transition for focus */
     }
-    .btn-primary {
-      background-color: #3b82f6; /* blue-600 */
+    input:focus, select:focus {
+      border-color: #1976d2; /* Blue border on focus */
+      outline: none; /* Remove default outline */
+      box-shadow: 0 0 0 3px rgba(25, 118, 210, 0.2); /* Blue shadow on focus */
+    }
+    button {
+      padding: 12px 25px;
+      background: linear-gradient(180deg, #2196f3 0%, #1976d2 100%); /* Blue gradient */
       color: white;
+      border: none;
+      border-radius: 9999px; /* Fully rounded */
+      cursor: pointer;
+      margin-right: 15px;
+      font-size: 16px;
+      font-weight: bold;
+      transition: background 0.3s ease, transform 0.2s ease, box-shadow 0.2s ease;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+      text-shadow: 0 1px 2px rgba(0,0,0,0.1); /* Subtle text shadow */
     }
-    .btn-primary:hover {
-      background-color: #2563eb; /* blue-700 */
-      transform: translateY(-1px);
+    button:hover {
+      background: linear-gradient(180deg, #1976d2 0%, #1565c0 100%); /* Darker blue gradient on hover */
+      transform: translateY(-3px); /* More pronounced lift */
+      box-shadow: 0 6px 12px rgba(0,0,0,0.3); /* Larger shadow on hover */
     }
-    .btn-primary:active {
+    button:active {
       transform: translateY(0);
+      box-shadow: 0 2px 4px rgba(0,0,0,0.2);
     }
-    .btn-secondary {
-      background-color: #e2e8f0; /* gray-200 */
-      color: #2d3748; /* gray-700 */
-      margin-left: 10px;
+    button:disabled { /* Style for disabled buttons */
+      background: #cccccc;
+      cursor: not-allowed;
+      box-shadow: none;
+      transform: none;
+      text-shadow: none;
     }
-    .btn-secondary:hover {
-      background-color: #cbd5e0; /* gray-300 */
-      transform: translateY(-1px);
-    }
-    .btn-secondary:active {
-      transform: translateY(0);
-    }
-    .text-danger {
-      color: #e53e3e; /* red-600 */
-      font-size: 0.875rem; /* text-sm */
-      margin-top: 5px;
-    }
-    .text-success {
-      color: #38a169; /* green-600 */
-      font-size: 0.875rem; /* text-sm */
-      margin-top: 5px;
-    }
-    .table-container {
-      overflow-x: auto;
-      margin-top: 20px;
+    /* Updated label-card styling for horizontal alignment */
+    .label-card {
+      width: 480px; /* Increased width to give more space */
+      height: 180px; /* Fixed height for consistent label size */
+      border: 2px solid #000;
+      padding: 10px; /* Adjusted padding for flex layout */
+      margin: 15px;
+      background: #fff;
+      text-align: center; /* Fallback, but flex will override */
+      font-size: 15px;
       border-radius: 8px;
-      border: 1px solid #e2e8f0;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+      display: flex; /* Make it a flex container */
+      align-items: center; /* Vertically align items */
+      justify-content: space-between; /* Distribute space between items */
+      box-sizing: border-box; /* Include padding in width/height */
+      flex-wrap: nowrap; /* Prevent wrapping for horizontal layout */
+      gap: 2px; /* Reduced gap for closer elements */
     }
-    .data-table {
+    .label-card canvas.qr-code { /* Changed from img to canvas for client-side QR */
+      width: 120px; /* Adjust size as needed */
+      height: 120px;
+      flex-shrink: 0; /* Prevent shrinking */
+      border: 1px solid #eee; /* Subtle border for QR code */
+      border-radius: 5px; /* Maintain border-radius */
+    }
+    /* New div to group Part and Serial numbers */
+    .label-text-block {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: flex-start; /* Align text to the left within its block */
+      flex-grow: 1; /* Allow text block to take available space */
+    }
+    .label-text-block p {
+      margin: 2px 0; /* Reduce margin for stacked paragraphs */
+      font-size: 18px; /* Adjust font size for readability */
+      font-weight: bold;
+      color: #333;
+      white-space: nowrap; /* Prevent text wrapping */
+      overflow: hidden; /* Ensure text doesn't overflow */
+      text-overflow: ellipsis; /* Add ellipsis if text overflows */
+    }
+    .label-card img.tesla-logo {
+      width: 80px; /* Adjust size as needed */
+      height: auto; /* Maintain aspect ratio */
+      flex-shrink: 0; /* Prevent shrinking */
+      border-radius: 5px; /* Maintain border-radius */
+      max-width: 80px; /* Explicitly set max-width */
+      max-height: 80px; /* Explicitly set max-height if needed to prevent vertical overflow */
+      object-fit: contain; /* Ensures the entire image fits within its bounds without cropping */
+    }
+
+    .preview-area {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      margin-top: 30px;
+      padding: 10px;
+      border: 1px dashed #ccc;
+      border-radius: 8px;
+      min-height: 150px;
+      align-items: center;
+      background-color: #fcfcfc;
+    }
+    .table {
       width: 100%;
       border-collapse: collapse;
-      font-size: 0.9rem;
-    }
-    .data-table th, .data-table td {
-      padding: 12px 15px;
-      border-bottom: 1px solid #e2e8f0;
-      text-align: left;
-    }
-    .data-table th {
-      background-color: #f7fafc; /* gray-50 */
-      font-weight: 600;
-      color: #4a5568;
-      text-transform: uppercase;
-      letter-spacing: 0.05em;
-    }
-    .data-table tbody tr:hover {
-      background-color: #edf2f7; /* gray-100 */
-    }
-    .data-table tbody tr:last-child td {
-      border-bottom: none;
-    }
-    .pagination-controls {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        gap: 10px;
-        margin-top: 20px;
-    }
-
-    .pagination-controls button {
-        padding: 8px 12px;
-        border: 1px solid #cbd5e0;
-        border-radius: 5px;
-        background-color: #fff;
-        cursor: pointer;
-        transition: background-color 0.2s;
-    }
-
-    .pagination-controls button:hover:not(:disabled) {
-        background-color: #edf2f7;
-    }
-
-    .pagination-controls button:disabled {
-        opacity: 0.5;
-        cursor: not-allowed;
-    }
-
-    .pagination-controls span {
-        font-weight: 500;
-        color: #4a5568;
-    }
-
-    /* Modal styles */
-    .modal {
-      display: none; /* Hidden by default */
-      position: fixed; /* Stay in place */
-      z-index: 1; /* Sit on top */
-      left: 0;
-      top: 0;
-      width: 100%; /* Full width */
-      height: 100%; /* Full height */
-      overflow: auto; /* Enable scroll if needed */
-      background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
-      align-items: center;
-      justify-content: center;
-    }
-
-    .modal-content {
-      background-color: #fefefe;
-      margin: auto;
-      padding: 20px;
-      border: 1px solid #888;
-      width: 80%;
-      max-width: 500px;
+      margin-top: 20px;
       border-radius: 8px;
-      box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+      overflow: hidden; /* For rounded corners on table */
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
     }
-
-    .close-button {
-      color: #aaa;
-      float: right;
-      font-size: 28px;
+    .table th, .table td {
+      border: 1px solid #ddd; /* Lighter table borders */
+      padding: 12px;
+      text-align: left;
+      font-size: 15px;
+    }
+    .table th {
+      background: #1976d2; /* Deep blue */
+      color: white;
       font-weight: bold;
     }
+    .table tr:nth-child(even) {
+      background-color: #f9f9f9;
+    }
+    .table tr:hover { /* Hover effect for table rows */
+      background-color: #e3f2fd; /* Light blue on hover */
+    }
+    .table button {
+      padding: 6px 12px;
+      font-size: 14px;
+      margin-right: 0;
+      box-shadow: none;
+      background: #2196f3; /* Medium blue */
+    }
+    .table button:hover {
+      background: #1976d2; /* Deep blue on hover */
+    }
+    .error {
+      color: #d32f2f; /* Red for error messages */
+      margin-top: 15px;
+      font-weight: bold;
+      text-align: center;
+      padding: 10px;
+      background-color: #ffebee; /* Light red */
+      border: 1px solid #ef9a9a; /* Darker red */
+      border-radius: 6px;
+    }
 
-    .close-button:hover,
-    .close-button:focus {
-      color: black;
-      text-decoration: none;
-      cursor: pointer;
+    /* Modal/Message Box Styling (from tstting code Updated.txt) */
+    .message-box-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.6);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 1000;
+      opacity: 0;
+      visibility: hidden;
+      transition: opacity 0.3s ease, visibility 0.3s ease;
+    }
+    .message-box-overlay.active {
+      opacity: 1;
+      visibility: visible;
+    }
+    .message-box {
+      background: #fff;
+      padding: 30px;
+      border-radius: 10px;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+      text-align: center;
+      max-width: 400px;
+      width: 90%;
+      transform: translateY(-20px);
+      transition: transform 0.3s ease;
+    }
+    .message-box-overlay.active .message-box {
+      transform: translateY(0);
+    }
+    .message-box p {
+      margin-bottom: 20px;
+      font-size: 18px;
+      color: #333;
+    }
+    .message-box input {
+      margin-bottom: 15px;
+      text-align: center;
+    }
+    .message-box button {
+      margin: 0 10px;
+      padding: 10px 20px;
+      font-size: 16px;
+      background: #4CAF50; /* Green for OK/Yes */
+    }
+    .message-box button.cancel {
+      background: #2196f3; /* Medium blue */
+    }
+    .message-box button:hover {
+      transform: translateY(-1px);
+    }
+
+    /* Loading Overlay Styling (from tstting code Updated.txt) */
+    #loadingOverlay {
+      display: none; /* Hidden by default */
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(255, 255, 255, 0.7); /* Semi-transparent white background */
+      z-index: 9999; /* Ensure it's on top of other content, higher than message box */
+      justify-content: center;
+      align-items: center;
+      flex-direction: column; /* For spinner and text */
+    }
+
+    #loadingOverlay .spinner {
+      border: 8px solid #f3f3f3; /* Light grey */
+      border-top: 8px solid #1976d2; /* Deep blue */
+      border-radius: 50%;
+      width: 60px;
+      height: 60px;
+      animation: spin 1s linear infinite; /* Spinning animation */
+    }
+
+    /* Keyframes for the spinner animation */
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    /* Print specific styles for label printers like GT800 */
+    @media print {
+      body {
+        margin: 0;
+        padding: 0;
+        /* For continuous feed, you might want to remove default margins */
+      }
+      .container, .tabs, .tab-content, .form-group, .error, #loadingOverlay, .message-box-overlay, .pagination-controls, button {
+        display: none !important; /* Hide everything except the print area and new pagination controls */
+      }
+      .preview-area {
+        display: block !important; /* Make sure preview area is visible for printing */
+        margin: 0 !important;
+        padding: 0 !important;
+        border: none !important;
+        background: none !important;
+        box-shadow: none !important;
+        min-height: auto !important;
+        width: auto !important; /* Allow content to dictate width */
+      }
+      .label-card {
+        width: 100mm; /* Example width for a common label size (e.g., 4x2 inches is ~101.6x50.8mm) */
+        height: 50mm; /* Example height */
+        padding: 5mm; /* Adjusted padding for print to give space from edges */
+        margin: 0; /* Remove margins between labels for continuous feed */
+        border: 1px solid #000; /* Lighter border for print */
+        box-shadow: none;
+        page-break-after: always; /* Ensure each label prints on a new physical label */
+        flex-shrink: 0; /* Prevent shrinking */
+        /* Important for thermal printers: ensure no extra space */
+        overflow: hidden; /* Hide anything that overflows the label boundary */
+        display: flex; /* Apply flex for print as well */
+        align-items: center; /* Vertically center items */
+        justify-content: flex-start; /* Align items to the start (left) */
+        box-sizing: border-box;
+        /* Removed gap here, will use margins for precise control */
+      }
+      .label-card:last-child {
+        page-break-after: auto; /* No page break after the last label */
+      }
+      .label-card canvas.qr-code { /* Changed from img to canvas for client-side QR */
+        width: 40mm; /* Adjust QR code size for print */
+        height: 40mm;
+        flex-shrink: 0; /* Prevent shrinking */
+      }
+      .label-text-block {
+        display: flex;
+        flex-direction: column;
+        justify-content: center; /* Vertically center content within text block */
+        align-items: flex-start;
+        flex-grow: 1; /* Allow text block to take available space and push logo */
+        margin-left: 5mm; /* Adjusted gap: Increased gap after QR code */
+        /* No margin-right here, flex-grow will handle pushing */
+      }
+      .label-text-block p {
+        font-size: 15pt; /* Increased font size for print */
+        margin: 0.5mm 0; /* Fine-tune vertical spacing for print */
+        white-space: nowrap;
+      }
+      .tesla-logo-container { /* New container for logo and text */
+        display: flex;
+        flex-direction: column;
+        align-items: center; /* Center logo and text horizontally within its block */
+        justify-content: center; /* Center logo and text vertically within its block */
+        margin-left: auto; /* Pushes the entire logo block to the far right, creating the dynamic gap */
+        flex-shrink: 0; /* Prevent shrinking */
+      }
+      .label-card img.tesla-logo {
+        width: 20mm; /* Adjust logo size for print */
+        height: auto;
+        max-width: 20mm;
+        max-height: 20mm;
+        object-fit: contain;
+        /* margin-left removed as it's now handled by tesla-logo-container */
+        /* align-self removed as it's now handled by tesla-logo-container */
+      }
+    }
+
+    /* Responsive adjustments for screen */
+    @media (max-width: 768px) {
+      .container {
+        padding: 15px;
+      }
+      .tabs {
+        flex-wrap: wrap;
+      }
+      .tab {
+        flex-grow: 1;
+        text-align: center;
+        padding: 10px 15px;
+      }
+      button {
+        width: 100%;
+        margin-right: 0;
+        margin-bottom: 10px;
+      }
+      .label-card {
+        width: 95%; /* Adjust width for smaller screens */
+        height: auto; /* Allow height to adjust */
+        flex-direction: column; /* Stack elements vertically on small screens */
+        justify-content: center;
+        align-items: center;
+        padding: 15px;
+      }
+      .label-card canvas.qr-code, .label-card img.tesla-logo { /* Changed from img to canvas */
+        margin: 10px 0; /* Adjust margins for stacking */
+      }
+      .label-text-block {
+        margin: 10px 0;
+        align-items: center; /* Center text when stacked */
+      }
+    }
+
+    /* Login Form Specific Styles */
+    #loginForm {
+      display: flex; /* Changed to flex to center the box */
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      background-color: #f4f4f4;
+    }
+    #loginBox {
+      background-color: #fff;
+      padding: 40px;
+      border-radius: 10px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+      text-align: center;
+      max-width: 400px;
+      width: 90%;
+    }
+    #loginBox h2 {
+      color: #1976d2;
+      margin-bottom: 5px; /* Reduced margin to bring text closer */
+      font-family: 'Montserrat', sans-serif; /* Apply Montserrat to heading */
+    }
+    #loginBox p.login-subtext { /* New style for the subtext */
+      color: #555;
+      font-size: 14px;
+      margin-bottom: 25px; /* Added margin below subtext */
+    }
+    #loginBox .form-group {
+      margin-bottom: 20px;
+      text-align: left;
+    }
+    #loginBox label { /* Specific label style for login form */
+      font-weight: normal; /* Override bold from general label */
+    }
+    #loginBox input[type="text"],
+    #loginBox input[type="password"] {
+      width: 100%;
+      padding: 12px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      font-size: 16px;
+      box-sizing: border-box;
+    }
+    #loginBox button {
+      width: 100%;
+      padding: 12px;
+      font-size: 18px;
+      margin-top: 20px;
+    }
+    #loginError {
+      color: #d32f2f; /* Red for error messages */
+      margin-top: 15px;
+      font-weight: bold;
     }
   </style>
 </head>
-<body class="bg-gray-100 min-h-screen flex justify-center items-start p-5">
-  <div class="container bg-white rounded-lg shadow-lg p-8 md:p-10">
-    <div class="header">
-      <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900">JHM Serial Number Generator</h1>
-      <img id="logo" src="" alt="JHM Logo" class="h-16 w-16 md:h-20 md:w-20 rounded-md">
-    </div>
+<body>
+  <div id="loadingOverlay" style="display:none;">
+    <div class="spinner"></div>
+  </div>
 
-    <div class="tab-buttons">
-      <button class="tab-button active" onclick="openTab('generator')">Generator</button>
-      <button class="tab-button" onclick="openTab('parts')">Parts Management</button>
-      <button class="tab-button" onclick="openTab('vendors')">Vendors Management</button>
-      <button class="tab-button" onclick="openTab('history')">History</button>
-    </div>
-
-    <div id="generator" class="tab-content">
-      <h2 class="text-2xl font-bold text-gray-800 mb-6">Generate Serial Number</h2>
+  <div id="loginForm">
+    <div id="loginBox">
+      <h2>Login</h2>
+      <p class="login-subtext">System Made By RAM</p>
       <div class="form-group">
-        <label for="partSelect" class="block text-gray-700 font-semibold mb-2">Select Part:</label>
-        <select id="partSelect" class="form-select"></select>
+        <label for="username">Username</label>
+        <input type="text" id="username" />
+      </div>
+      <div class="form-group">
+        <label for="password">Password</label>
+        <input type="password" id="password" />
+      </div>
+      <button onclick="handleLogin()">Login</button>
+      <div id="loginError" class="error"></div>
+    </div>
+  </div>
+
+  <div class="container" id="mainContent" style="display:none;">
+    <h1>JHM Serial Number Generator</h1>
+
+    <div class="tabs">
+      <div class="tab active" data-tab="generate">Generate Labels</div>
+      <div class="tab" data-tab="reprint">Reprint</div>
+      <div class="tab" data-tab="parts">Part Manager</div>
+      <div class="tab" data-tab="vendors">Vendor Manager</div>
+      <div class="tab" data-tab="history">History Viewer</div>
+      <button onclick="logout()" style="background-color: #f44336; margin-left: auto;">Logout</button>
+    </div>
+    
+    <div id="generate" class="tab-content active">
+      <div class="form-group">
+        <label for="partSelect">Part Number</label>
+        <select id="partSelect">
+          <option value="">-- Select Part --</option>
+        </select>
         <p id="partDescription" class="text-sm text-gray-600 mt-2"></p>
         <p id="partVendorCode" class="text-sm text-gray-600"></p>
-        <p id="generateError" class="text-danger"></p>
       </div>
       <div class="form-group">
-        <label for="currentDailyCounterDisplay" class="block text-gray-700 font-semibold mb-2">Current Daily Counter:</label>
-        <span id="currentDailyCounterDisplay" class="text-xl font-bold text-blue-600">Loading...</span>
+        <label for="quantity">Quantity (1-50)</label>
+        <input type="number" id="quantity" min="1" max="50" value="1" />
       </div>
       <div class="form-group">
-        <label for="quantity" class="block text-gray-700 font-semibold mb-2">Quantity:</label>
-        <input type="number" id="quantity" value="1" min="1" class="form-input" />
+        <label for="currentDailyCounterDisplay">Current Daily Counter:</label>
+        <span id="currentDailyCounterDisplay">Loading...</span>
       </div>
-      <div class="flex flex-wrap gap-4 mt-6">
-        <button class="btn btn-primary" onclick="generateSerialNumbers()">Generate Serial Number(s)</button>
-        <button class="btn btn-secondary" onclick="exportSerialNumbers()">Export as PDF</button>
-      </div>
-      <div id="serialNumberOutput" class="mt-8 p-6 bg-gray-50 rounded-lg border border-gray-200">
-        <h3 class="text-xl font-semibold text-gray-800 mb-4">Generated Serial Numbers:</h3>
-        <pre id="generatedSerials" class="text-gray-700 whitespace-pre-wrap"></pre>
-        <button id="copySerialsBtn" class="btn btn-secondary mt-4" style="display: none;">Copy to Clipboard</button>
-        <div id="qrCodesContainer" class="mt-4 grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4"></div> <!-- QR Code display area -->
-      </div>
+      <button onclick="generateLabels()">Generate Labels</button>
+      <button onclick="exportToPDF()">Export to PDF</button>
+      <button onclick="printLabels()">Print Labels</button>
+      <div class="preview-area" id="previewArea"></div>
+      <div id="generateError" class="error"></div>
     </div>
-
-    <div id="parts" class="tab-content hidden">
-      <h2 class="text-2xl font-bold text-gray-800 mb-6">Parts Management</h2>
-      <div class="mb-4 flex flex-wrap gap-4">
-        <input type="text" id="partNumber" placeholder="Part Number" class="p-2 border rounded-md flex-grow">
-        <input type="text" id="partDescriptionInput" placeholder="Description" class="p-2 border rounded-md flex-grow">
-        <select id="partVendorCodeInput" class="p-2 border rounded-md">
-          <option value="">Select Vendor</option>
-        </select>
-        <select id="partActiveInput" class="p-2 border rounded-md">
-          <option value="Yes">Active</option>
-          <option value="No">Inactive</option>
-        </select>
-        <button class="btn btn-primary" onclick="addPart()">Add Part</button>
+    
+    <div id="reprint" class="tab-content">
+      <div class="form-group">
+        <label for="serialSearch">Serial Number</label>
+        <input type="text" id="serialSearch" placeholder="e.g., S:AC82525014900001" />
       </div>
-      <div class="table-container">
-        <table class="data-table">
-          <thead>
-            <tr>
-              <th>Part Number</th>
-              <th>Description</th>
-              <th>Vendor Code</th>
-              <th>Active</th>
-              <th>Actions</th>
-            </tr>
-          </thead>
-          <tbody id="partsTableBody">
-            <!-- Parts will be loaded here -->
-          </tbody>
-        </table>
-      </div>
+      <button onclick="reprintLabel()">Reprint Label</button>
+      <button onclick="printReprintLabel()">Print Label</button>
+      <div class="preview-area" id="reprintPreview"></div>
+      <div id="reprintError" class="error"></div>
     </div>
-
-    <div id="vendors" class="tab-content hidden">
-      <h2 class="text-2xl font-bold text-gray-800 mb-6">Vendors Management</h2>
-      <div class="mb-4 flex flex-wrap gap-4">
-        <input type="text" id="vendorCode" placeholder="Vendor Code" class="p-2 border rounded-md w-1/4">
-        <input type="text" id="vendorName" placeholder="Vendor Name" class="p-2 border rounded-md flex-grow">
-        <button class="btn btn-primary" onclick="addVendor()">Add Vendor</button>
-      </div>
-      <div class="table-container">
-        <table class="data-table">
-          <thead>
-            <tr>
-              <th>Code</th>
-              <th>Name</th>
-              <th>Actions</th>
-            </tr>
-          </thead>
-          <tbody id="vendorsTableBody">
-            <!-- Vendors will be loaded here -->
-          </tbody>
-        </table>
-      </div>
+    
+    <div id="parts" class="tab-content">
+      <button onclick="addPart()">Add Part</button>
+      <table class="table" id="partsTable">
+        <thead>
+          <tr>
+            <th>Part Number</th>
+            <th>Description</th>
+            <th>Vendor Code</th>
+            <th>Active</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+      <div id="partsError" class="error"></div>
     </div>
-
-    <div id="history" class="tab-content hidden">
-      <h2 class="text-2xl font-bold text-gray-800 mb-6">History</h2>
-      <div class="mb-4 flex flex-wrap gap-4">
-        <input type="text" id="historySerialSearch" placeholder="Search by Serial" class="p-2 border rounded-md flex-grow">
-        <input type="text" id="historyPartSearch" placeholder="Search by Part" class="p-2 border rounded-md flex-grow">
-        <button class="btn btn-primary" onclick="loadHistory(true)">Apply Filter</button>
-        <button class="btn btn-secondary" onclick="exportFilteredHistory()">Export Filtered History</button>
-        <button class="btn btn-secondary" onclick="exportAllHistory()">Export All History</button>
-      </div>
-      <div class="table-container">
-        <table class="data-table">
-          <thead>
-            <tr>
-              <th>Serial</th>
-              <th>Part</th>
-              <th>Description</th>
-              <th>Vendor Code</th>
-              <th>Date</th>
-              <th>Counter</th>
-            </tr>
-          </thead>
-          <tbody id="historyTableBody">
-            <!-- History will be loaded here -->
-          </tbody>
-        </table>
-      </div>
-      <div class="pagination-controls">
-        <button onclick="changePage(-1)" id="prevPageBtn">Previous</button>
-        <span id="pageInfo">Page 1 of 1</span>
-        <button onclick="changePage(1)" id="nextPageBtn">Next</button>
-      </div>
+    
+    <div id="vendors" class="tab-content">
+      <button onclick="addVendor()">Add Vendor</button>
+      <table class="table" id="vendorsTable">
+        <thead>
+          <tr>
+            <th>Code</th>
+            <th>Name</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+      <div id="vendorsError" class="error"></div>
     </div>
-
+    
+    <div id="history" class="tab-content">
+      <div class="form-group">
+        <label for="historySerialSearch">Search by Serial Number:</label>
+        <input type="text" id="historySerialSearch" placeholder="Enter full or partial serial number" />
+      </div>
+      <div class="form-group">
+        <label for="historyPartSearch">Search by Part Number:</label>
+        <input type="text" id="historyPartSearch" placeholder="Enter full or partial part number" />
+      </div>
+      <button onclick="filterHistory()">Search History</button>
+      <button onclick="exportHistoryToExcel(true)">Export Filtered to Excel</button>
+      <button onclick="exportHistoryToExcel(false)">Export All to Excel</button>
+      <table class="table" id="historyTable">
+        <thead>
+          <tr>
+            <th>Serial</th>
+            <th>Part</th>
+            <th>Description</th>
+            <th>Vendor Code</th>
+            <th>Date</th>
+            <th>Counter</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+      <div class="pagination-controls" style="display: flex; justify-content: center; align-items: center; gap: 15px; margin-top: 20px;">
+        <button id="prevHistoryPage" onclick="previousHistoryPage()" disabled>Previous</button>
+        <span id="historyPageInfo">Page 1 of 1</span>
+        <button id="nextHistoryPage" onclick="nextHistoryPage()" disabled>Next</button>
+      </div>
+      <div id="historyError" class="error"></div>
+    </div>
   </div>
 
-  <!-- Message Box HTML -->
-  <div id="overlay" class="hidden"></div>
-  <div id="messageBox" class="hidden">
-    <p id="messageText"></p>
-    <button onclick="hideMessageBox()">OK</button>
+  <!-- Message Box HTML (from tstting code Updated.txt) -->
+  <div id="messageBoxOverlay" class="message-box-overlay">
+    <div class="message-box">
+      <p id="messageBoxText"></p>
+      <input type="text" id="messageBoxInput" style="display:none;" />
+      <button id="messageBoxConfirm" style="display:none;">OK</button>
+      <button id="messageBoxCancel" class="cancel" style="display:none;">Cancel</button>
+      <button id="messageBoxAlert" style="display:none;">OK</button>
+    </div>
   </div>
-
-  <!-- Loading Spinner HTML -->
-  <div id="loadingSpinner" class="hidden"></div>
 
   <script>
+    console.log("Script loaded successfully");
+    var jsPDF = window.jspdf.jsPDF;
+    // Changed to store only the Google Drive File ID
     // NEW GAS_WEB_APP_URL for GET-only API
     const GAS_WEB_APP_URL = "https://script.google.com/macros/s/AKfycbwYlAOxC0yz3UFukVmSRAnlQY1KJ06QVgZmqnT9JLYx8rXtkX1nseEhmMaRA-UXLXWOZg/exec";
-    let TESLA_LOGO_BASE64 = 'https://placehold.co/100x100?text=Logo'; // Default placeholder
+    var TESLA_LOGO_FILE_ID = '1en7umlfHN1huVyIsNNib8FzzJdPaiDvP'; 
+    var TESLA_LOGO_BASE64 = ''; 
+    var allParts = [];
+    var currentDisplayedHistory = []; // To store currently displayed history for export
 
-    let currentParts = [];
-    let currentVendors = [];
-    let currentPage = 1;
-    const itemsPerPage = 20; // Number of items per page for history
+    // Pagination variables for history tab
+    var currentPage = 1;
+    var itemsPerPage = 20;
+    var totalHistoryEntries = 0;
+    var currentHistoryFilter = { serial: '', part: '' }; // Store current filter for pagination
 
-    // Function to show the loading spinner
-    function showLoading() {
-        document.getElementById('loadingSpinner').classList.remove('hidden');
-        document.getElementById('overlay').classList.remove('hidden');
+    function handleLogin() {
+      const usernameInput = document.getElementById('username').value;
+      const passwordInput = document.getElementById('password').value;
+      const loginErrorDiv = document.getElementById('loginError');
+
+      if (usernameInput === 'Admin' && passwordInput === 'JHM123') {
+        localStorage.setItem('isLoggedIn', 'true');
+        document.getElementById('loginForm').style.display = 'none';
+        document.getElementById('mainContent').style.display = 'block';
+        loginErrorDiv.textContent = '';
+        initialize();
+      } else {
+        loginErrorDiv.textContent = 'Invalid username or password.';
+      }
     }
 
-    // Function to hide the loading spinner
-    function hideLoading() {
-        document.getElementById('loadingSpinner').classList.add('hidden');
-        document.getElementById('overlay').classList.add('hidden');
+    function logout() {
+      localStorage.removeItem('isLoggedIn');
+      document.getElementById('mainContent').style.display = 'none';
+      document.getElementById('loginForm').style.display = 'flex';
+      document.getElementById('username').value = '';
+      document.getElementById('password').value = '';
     }
 
-    // Function to show a custom message box
-    function showMessageBox(message, type = 'info') {
-        const messageBox = document.getElementById('messageBox');
-        const messageText = document.getElementById('messageText');
-        const overlay = document.getElementById('overlay');
+    function checkLoginStatus() {
+      if (localStorage.getItem('isLoggedIn') === 'true') {
+        document.getElementById('loginForm').style.display = 'none';
+        document.getElementById('mainContent').style.display = 'block';
+        initialize();
+      } else {
+        document.getElementById('loginForm').style.display = 'flex';
+        document.getElementById('mainContent').style.display = 'none';
+      }
+    }
 
-        messageText.textContent = message;
-        messageBox.className = ''; // Clear existing classes
-        messageBox.classList.remove('hidden'); // Show the message box by removing hidden
-        overlay.classList.remove('hidden'); // Show overlay by removing hidden
-
-        // Add type-specific classes for styling
-        if (type === 'alert') {
-            messageBox.classList.add('alert');
-        } else if (type === 'error') {
-            messageBox.classList.add('error');
-        } else if (type === 'success') {
-            messageBox.classList.add('success');
+    /**
+     * Fetches the logo as Base64 from Google Apps Script.
+     * Uses the new callGAS function instead of google.script.run
+     */
+    async function getTeslaLogoBase64() {
+        showLoading();
+        try {
+            const data = await callGAS("getLogoBase64FromDrive", { fileId: TESLA_LOGO_FILE_ID });
+            if (data && data !== 'ERROR_LOADING_LOGO') {
+                TESLA_LOGO_BASE64 = data;
+                document.getElementById('logo').src = TESLA_LOGO_BASE64;
+            } else {
+                console.warn("Failed to load logo from Drive, using placeholder.");
+                document.getElementById('logo').src = 'https://placehold.co/100x100?text=Logo'; // Fallback
+            }
+        } catch (error) {
+            console.error("Failed to load logo:", error);
+            document.getElementById('logo').src = 'https://placehold.co/100x100?text=Logo'; // Fallback
+        } finally {
+            hideLoading();
         }
     }
 
-    // Function to hide the custom message box
-    function hideMessageBox() {
-        document.getElementById('messageBox').classList.add('hidden'); // Hide by adding hidden
-        document.getElementById('overlay').classList.add('hidden'); // Hide by adding hidden
+
+    function showLoading() {
+      document.getElementById('loadingOverlay').style.display = 'flex';
+      disableButtons(true);
     }
+
+    function hideLoading() {
+      document.getElementById('loadingOverlay').style.display = 'none';
+      disableButtons(false);
+    }
+
+    function disableButtons(disable) {
+      const buttons = document.querySelectorAll('button');
+      buttons.forEach(btn => btn.disabled = disable);
+    }
+
+    // Re-implemented showMessageBox based on tstting code Updated.txt
+    function showMessageBox(message, type, defaultValue = '') {
+      const overlay = document.getElementById('messageBoxOverlay');
+      const messageText = document.getElementById('messageBoxText');
+      const messageInput = document.getElementById('messageBoxInput');
+      const confirmBtn = document.getElementById('messageBoxConfirm');
+      const cancelBtn = document.getElementById('messageBoxCancel');
+      const alertBtn = document.getElementById('messageBoxAlert');
+
+      messageText.textContent = message;
+      messageInput.style.display = 'none';
+      confirmBtn.style.display = 'none';
+      cancelBtn.style.display = 'none';
+      alertBtn.style.display = 'none';
+
+      let resolvePromise;
+      const promise = new Promise(resolve => {
+        resolvePromise = resolve;
+      });
+
+      // Clear previous event listeners
+      confirmBtn.onclick = null;
+      cancelBtn.onclick = null;
+      alertBtn.onclick = null;
+
+      const handleConfirm = () => {
+        overlay.classList.remove('active');
+        resolvePromise(true);
+      };
+      const handleCancel = () => {
+        overlay.classList.remove('active');
+        resolvePromise(false);
+      };
+      const handleAlert = () => {
+        overlay.classList.remove('active');
+        resolvePromise(true); // For alert, always resolve with true/void after OK
+      };
+      const handlePrompt = () => {
+        overlay.classList.remove('active');
+        resolvePromise(messageInput.value);
+      };
+
+      if (type === 'confirm') {
+        confirmBtn.textContent = 'Yes';
+        cancelBtn.textContent = 'No';
+        confirmBtn.style.display = 'inline-block';
+        cancelBtn.style.display = 'inline-block';
+        confirmBtn.onclick = handleConfirm;
+        cancelBtn.onclick = handleCancel;
+      } else if (type === 'prompt') {
+        messageInput.value = defaultValue;
+        messageInput.style.display = 'block';
+        confirmBtn.textContent = 'OK';
+        cancelBtn.textContent = 'Cancel';
+        confirmBtn.style.display = 'inline-block';
+        cancelBtn.style.display = 'inline-block';
+        confirmBtn.onclick = handlePrompt;
+        cancelBtn.onclick = handleCancel;
+      } else { // 'alert' or default
+        alertBtn.textContent = 'OK';
+        alertBtn.style.display = 'inline-block';
+        alertBtn.onclick = handleAlert;
+      }
+      overlay.classList.add('active');
+      return promise;
+    }
+
+    // Tab switching event listeners
+    document.querySelectorAll('.tab').forEach(function(tab) {
+      tab.addEventListener('click', function() {
+        document.querySelectorAll('.tab').forEach(function(t) {
+          t.classList.remove('active');
+        });
+        document.querySelectorAll('.tab-content').forEach(function(c) {
+          c.classList.remove('active');
+        });
+        tab.classList.add('active');
+        document.getElementById(tab.dataset.tab).classList.add('active');
+
+        // If history tab is clicked, load history with pagination
+        if (this.dataset.tab === 'history') {
+          // Reset filter and load first page of history
+          document.getElementById('historySerialSearch').value = '';
+          document.getElementById('historyPartSearch').value = '';
+          currentHistoryFilter = { serial: '', part: '' };
+          loadHistory(1);
+        } else if (this.dataset.tab === 'parts') {
+          loadParts();
+        } else if (this.dataset.tab === 'vendors') {
+          loadVendors();
+        }
+        // No specific load needed for 'generate' or 'reprint' as they load on init or button click
+      });
+    });
 
     /**
      * Generic function to call Google Apps Script Web App using GET requests.
@@ -538,624 +853,763 @@
         return data;
       } catch (error) {
         console.error(`Error calling GAS function '${action}':`, error);
-        showMessageBox(`Error: ${error.message}`, 'error');
+        showMessageBox(`Error: ${error.message}`, 'alert'); // Use alert for errors
         throw error;
       }
     }
 
-    // Function to check login status (if any authentication were implemented)
-    function checkLoginStatus() {
-      // In this version, there's no explicit login. We proceed directly to initialize.
-      initialize();
-    }
-
-    // Function to switch tabs
-    function openTab(tabName) {
-      const tabs = document.querySelectorAll('.tab-content');
-      tabs.forEach(tab => tab.classList.add('hidden'));
-
-      const buttons = document.querySelectorAll('.tab-button');
-      buttons.forEach(button => button.classList.remove('active'));
-
-      document.getElementById(tabName).classList.remove('hidden');
-      document.querySelector(`.tab-button[onclick="openTab('${tabName}')"]`).classList.add('active');
-
-      // Specific load functions for tabs that need data on display
-      if (tabName === 'parts') {
-        loadParts();
-      } else if (tabName === 'vendors') {
-        loadVendors();
-        populatePartVendorSelect(); // Refresh vendors for part management
-      } else if (tabName === 'history') {
-        currentPage = 1; // Reset to first page when history tab is opened
-        loadHistory(true); // Load history with filters applied (initially no filters)
-      }
-    }
-
-    // Generate random serial numbers
-    async function generateSerialNumbers() {
-      const partSelect = document.getElementById('partSelect');
-      const selectedPartNumber = partSelect.value;
-      const quantity = parseInt(document.getElementById('quantity').value, 10);
-      const generatedSerialsElement = document.getElementById('generatedSerials');
-      const copySerialsBtn = document.getElementById('copySerialsBtn');
-      const generateErrorElement = document.getElementById('generateError');
-
-      generateErrorElement.textContent = ''; // Clear previous errors
-
-      if (!selectedPartNumber) {
-        generateErrorElement.textContent = 'Please select a part.';
-        return;
-      }
-      if (isNaN(quantity) || quantity < 1) {
-        generateErrorElement.textContent = 'Quantity must be at least 1.';
-        return;
-      }
-
+    async function generateLabels() {
       showLoading();
       try {
-        const counterResponse = await callGAS('getCounter');
-        let currentCounter = counterResponse.counter;
+        console.log("generateLabels called");
+        var partNumber = document.getElementById('partSelect').value.trim();
+        var quantity = parseInt(document.getElementById('quantity').value);
+        var errorDiv = document.getElementById('generateError');
 
-        // Use standard JavaScript Date methods for formatting
-        const now = new Date();
-        const year = String(now.getFullYear()).slice(-2); // Last two digits of year
-        const month = String(now.getMonth() + 1).padStart(2, '0'); // Month (0-11) + 1, pad with 0
-        const day = String(now.getDate()).padStart(2, '0'); // Day of month, pad with 0
-        const date = `${year}${month}${day}`; // Format as yyMMdd
+        var selectedPart = allParts.find(function(part) {
+          return part['Part Number'] === partNumber;
+        });
 
-        const serials = [];
-        const historyEntries = [];
-
-        for (let i = 0; i < quantity; i++) {
-          const formattedCounter = String(currentCounter).padStart(5, '0');
-          const serial = `${selectedPartNumber}${date}${formattedCounter}`;
-          serials.push(serial);
-
-          const selectedPart = currentParts.find(p => p['Part Number'] === selectedPartNumber);
-          historyEntries.push({
-            Serial: serial,
-            Part: selectedPart['Part Number'],
-            Description: selectedPart.Description,
-            'Vendor Code': selectedPart['Vendor Code'],
-            Date: new Date().toLocaleDateString('en-US'), // Keep local date string for history
-            Counter: currentCounter
-          });
-          currentCounter++; // Increment for next serial
+        if (!partNumber || !selectedPart || isNaN(quantity) || quantity < 1 || quantity > 50) {
+          errorDiv.textContent = 'Please select a valid Part Number and enter Quantity (1-50).';
+          hideLoading();
+          return;
         }
 
-        // Update the counter in Apps Script by the generated quantity
+        var vendorCode = selectedPart['Vendor Code'];
+        if (!vendorCode || !/^[a-zA-Z0-9]{3}$/.test(vendorCode.trim())) {
+          errorDiv.textContent = 'Selected Part has an invalid or missing 3-alphanumeric character Vendor Code. Please update part details.';
+          hideLoading();
+          return;
+        }
+        errorDiv.textContent = '';
+
+        var now = new Date();
+        var year = now.getFullYear().toString().slice(-2);
+        // Calculate day of year (0-indexed for simplicity, then convert to 1-indexed string)
+        var startOfYear = new Date(now.getFullYear(), 0, 0);
+        var diff = now.getTime() - startOfYear.getTime();
+        var oneDay = 1000 * 60 * 60 * 24;
+        var dayOfYear = Math.floor(diff / oneDay).toString();
+        dayOfYear = ("000" + dayOfYear).slice(-3); // Ensure 3 digits
+
+        const counterData = await callGAS('getCounter');
+        let counter = counterData.counter;
+
+        const entries = [];
+        for (let i = 0; i < quantity; i++) {
+          let serialCounter = (counter + i).toString();
+          serialCounter = ("000000" + serialCounter).slice(-6); // Ensure 6 digits
+          
+          entries.push({
+            Serial: "S:" + vendorCode + year + dayOfYear + serialCounter,
+            Part: partNumber,
+            Description: selectedPart.Description || '',
+            'Vendor Code': vendorCode,
+            Date: now.toISOString(), // Store as ISO string
+            Counter: counter + i
+          });
+        }
+
+        await callGAS('setHistory', { entries: entries });
         await callGAS('incrementCounter', { quantity: quantity });
-        await callGAS('setHistory', { entries: historyEntries });
 
-        generatedSerialsElement.textContent = serials.join('\n');
-        copySerialsBtn.style.display = 'block';
-        
-        const qrCodesContainer = document.getElementById('qrCodesContainer');
-        qrCodesContainer.innerHTML = ''; // Clear previous QR codes
+        var previewArea = document.getElementById('previewArea');
+        previewArea.innerHTML = ''; // Clear previous labels
 
-        serials.forEach((serial, index) => {
+        entries.forEach(function(entry) {
+          const labelCard = document.createElement('div');
+          labelCard.className = 'label-card';
+
           const qrCanvas = document.createElement('canvas');
-          qrCanvas.id = `qr-code-${index}`;
-          qrCanvas.className = 'w-full h-auto rounded-md shadow-sm border border-gray-300';
-          qrCodesContainer.appendChild(qrCanvas);
+          qrCanvas.className = 'qr-code';
+          labelCard.appendChild(qrCanvas);
 
           // Generate QR code onto the canvas
-          QRCode.toCanvas(qrCanvas, serial, { errorCorrectionLevel: 'H', width: 128 }, function (error) {
-            if (error) console.error('QR Code generation error:', error);
+          const qrData = `P:${entry.Part}\nS:${entry.Serial}`;
+          new QRCode(qrCanvas, {
+            text: qrData,
+            width: 120,
+            height: 120,
+            colorDark : "#000000",
+            colorLight : "#ffffff",
+            correctLevel : QRCode.CorrectLevel.H
           });
+
+          const labelTextBlock = document.createElement('div');
+          labelTextBlock.className = 'label-text-block';
+          labelTextBlock.innerHTML = `
+            <p class="part-number">(P)${entry.Part}</p>
+            <p class="serial-number">(S)${entry.Serial.startsWith('S:') ? entry.Serial.substring(2) : entry.Serial}</p>
+          `;
+          labelCard.appendChild(labelTextBlock);
+
+          const teslaLogoContainer = document.createElement('div');
+          teslaLogoContainer.className = 'tesla-logo-container';
+          const teslaLogoImg = document.createElement('img');
+          teslaLogoImg.className = 'tesla-logo';
+          teslaLogoImg.alt = 'JHM Logo';
+          teslaLogoImg.src = TESLA_LOGO_BASE64; // Use the fetched Base64 logo
+          teslaLogoContainer.appendChild(teslaLogoImg);
+          labelCard.appendChild(teslaLogoContainer);
+
+          previewArea.appendChild(labelCard);
         });
 
-        document.getElementById('currentDailyCounterDisplay').textContent = (currentCounter); // Update displayed counter
-
-        showMessageBox(`Successfully generated ${quantity} serial number(s)!`, 'success');
+        // Update current daily counter display
+        document.getElementById('currentDailyCounterDisplay').textContent = (counter + quantity);
+        await showMessageBox(`Successfully generated ${quantity} labels!`, 'alert');
 
       } catch (error) {
-        console.error('Error generating serial numbers:', error);
-        generateErrorElement.textContent = 'Failed to generate serial numbers: ' + error.message;
+        errorDiv.textContent = 'Error generating labels: ' + error.message;
+        console.error('Error generating labels:', error);
       } finally {
         hideLoading();
       }
     }
 
-    // Export generated serial numbers as PDF (now includes QR codes via html2canvas)
-    async function exportSerialNumbers() {
-      const serialNumberOutput = document.getElementById('serialNumberOutput');
-      if (!serialNumberOutput.textContent.trim() && document.getElementById('qrCodesContainer').children.length === 0) {
-        showMessageBox('No serial numbers or QR codes to export.', 'alert');
+    async function reprintLabel() {
+      showLoading();
+      try {
+        const serial = document.getElementById('serialSearch').value.trim();
+        const reprintErrorDiv = document.getElementById('reprintError');
+        const reprintPreviewArea = document.getElementById('reprintPreview');
+        reprintPreviewArea.innerHTML = ''; // Clear previous content
+
+        if (!serial) {
+          reprintErrorDiv.textContent = 'Please enter a serial number to reprint.';
+          hideLoading();
+          return;
+        }
+
+        const entry = await callGAS('getSerialById', { serial: serial });
+
+        if (entry) {
+          reprintErrorDiv.textContent = '';
+          const labelCard = document.createElement('div');
+          labelCard.className = 'label-card';
+
+          const qrCanvas = document.createElement('canvas');
+          qrCanvas.className = 'qr-code';
+          labelCard.appendChild(qrCanvas);
+
+          // Generate QR code onto the canvas
+          const qrData = `P:${entry.Part}\nS:${entry.Serial}`;
+          new QRCode(qrCanvas, {
+            text: qrData,
+            width: 120,
+            height: 120,
+            colorDark : "#000000",
+            colorLight : "#ffffff",
+            correctLevel : QRCode.CorrectLevel.H
+          });
+
+          const labelTextBlock = document.createElement('div');
+          labelTextBlock.className = 'label-text-block';
+          labelTextBlock.innerHTML = `
+            <p class="part-number">(P)${entry.Part}</p>
+            <p class="serial-number">(S)${entry.Serial.startsWith('S:') ? entry.Serial.substring(2) : entry.Serial}</p>
+          `;
+          labelCard.appendChild(labelTextBlock);
+
+          const teslaLogoContainer = document.createElement('div');
+          teslaLogoContainer.className = 'tesla-logo-container';
+          const teslaLogoImg = document.createElement('img');
+          teslaLogoImg.className = 'tesla-logo';
+          teslaLogoImg.alt = 'JHM Logo';
+          teslaLogoImg.src = TESLA_LOGO_BASE64; // Use the fetched Base64 logo
+          teslaLogoContainer.appendChild(teslaLogoImg);
+          labelCard.appendChild(teslaLogoContainer);
+
+          reprintPreviewArea.appendChild(labelCard);
+
+        } else {
+          reprintErrorDiv.textContent = 'Serial number not found.';
+        }
+      } catch (error) {
+        document.getElementById('reprintError').textContent = 'Error reprinting label: ' + error.message;
+        console.error('Error reprinting label:', error);
+      } finally {
+        hideLoading();
+      }
+    }
+
+    // New function to handle printing for the reprint tab
+    function printReprintLabel() {
+      const reprintPreviewArea = document.getElementById('reprintPreview');
+      if (reprintPreviewArea.children.length === 0) {
+        showMessageBox('No label to print. Please generate a reprint label first.', 'alert');
         return;
       }
 
+      // Get the current CSS styles, especially the print media query rules
+      let style_html = '';
+      for (const sheet of document.styleSheets) {
+          try {
+              for (const rule of sheet.cssRules) {
+                  style_html += rule.cssText;
+              }
+          } catch (e) {
+              console.warn("Could not read CSS rules from stylesheet (might be cross-origin):", sheet.href, e);
+          }
+      }
+
+      const printContents = reprintPreviewArea.innerHTML;
+
+      const newWindow = window.open('', '_blank');
+      if (!newWindow) {
+          showMessageBox('Pop-up blocker might be preventing printing. Please allow pop-ups for this site.', 'alert');
+          return;
+      }
+
+      newWindow.document.write('<!DOCTYPE html>');
+      newWindow.document.write('<html lang="en">');
+      newWindow.document.write('<head>');
+      newWindow.document.write('<meta charset="UTF-8">');
+      newWindow.document.write('<meta name="viewport" content="width=device-width, initial-scale=1.0">');
+      newWindow.document.write('<title>Print Label</title>');
+      newWindow.document.write('<style>');
+      newWindow.document.write(style_html); // Inject all current styles
+      newWindow.document.write('</style>');
+      newWindow.document.write('</head>');
+      newWindow.document.write('<body>');
+      newWindow.document.write('<div class="preview-area" style="display:block !important; margin:0 !important; padding:0 !important; border:none !important; background:none !important; box-shadow:none !important; min-height:auto !important; width:auto !important;">'); // Re-apply print-specific styles
+      newWindow.document.write(printContents);
+      newWindow.document.write('</div>');
+      newWindow.document.write('</body>');
+      newWindow.document.write('</html>');
+      newWindow.document.close();
+
+      newWindow.onload = function() {
+          newWindow.focus();
+          newWindow.print();
+          setTimeout(function() {
+              newWindow.close();
+          }, 500); // Small delay to allow print dialog to appear before closing
+      };
+    }
+
+    async function exportToPDF() {
       showLoading();
       try {
-        const canvas = await html2canvas(serialNumberOutput, { scale: 2 }); // Scale for better resolution
-        const imgData = canvas.toDataURL('image/png');
-        const { jsPDF } = window.jspdf;
-        const doc = new jsPDF({
-          orientation: 'portrait',
-          unit: 'mm',
-          format: 'a4'
-        });
-
-        const imgWidth = 200; // A4 width minus margins (approx 210mm - 10mm*2)
-        const pageHeight = doc.internal.pageSize.height;
-        const imgHeight = (canvas.height * imgWidth) / canvas.width;
-        let heightLeft = imgHeight;
-        let position = 0;
-
-        doc.addImage(imgData, 'PNG', 5, position + 5, imgWidth, imgHeight);
-        heightLeft -= pageHeight;
-
-        while (heightLeft >= 0) { // Check if there's more content than one page
-          position = heightLeft - imgHeight;
-          doc.addPage();
-          doc.addImage(imgData, 'PNG', 5, position + 5, imgWidth, imgHeight);
-          heightLeft -= pageHeight;
+        const previewArea = document.getElementById('previewArea');
+        if (previewArea.children.length === 0) {
+          await showMessageBox('No labels to export. Please generate labels first.', 'alert');
+          hideLoading();
+          return;
         }
 
-        doc.save('generated_serial_numbers_with_qr.pdf');
-        showMessageBox('Serial numbers and QR codes exported to PDF successfully!', 'success');
+        const pdf = new jsPDF('p', 'mm', 'a4');
+        const padding = 10;
+        const labelWidth = 101.6; // ~4 inches
+        const labelHeight = 50.8; // ~2 inches
+
+        let x = padding;
+        let y = padding;
+
+        for (const labelCard of Array.from(previewArea.children)) {
+          // Check if the current label will fit on the current page. If not, add a new page.
+          // Add some buffer (e.g., padding) to prevent it from going exactly to the edge
+          if (y + labelHeight + padding > pdf.internal.pageSize.height) {
+            pdf.addPage();
+            y = padding; // Reset Y for new page
+            x = padding; // Reset X for new page
+          }
+
+          const canvas = await html2canvas(labelCard, {
+            scale: 2, // Capture at higher resolution for better PDF quality
+            useCORS: true, // Important if your images/logos are cross-origin
+            logging: false, // Disable html2canvas logging
+          });
+
+          // Convert canvas to image data
+          const imgData = canvas.toDataURL('image/jpeg', 0.9); // Use JPEG for smaller file size, 0.9 quality
+
+          // Add image to PDF
+          pdf.addImage(imgData, 'JPEG', x, y, labelWidth, labelHeight);
+
+          // Move y position for the next label
+          y += labelHeight + padding;
+        }
+
+        pdf.save('JHM_Labels.pdf');
+        hideLoading();
+        await showMessageBox('Labels exported to PDF successfully!', 'alert');
       } catch (error) {
-        console.error('Error exporting serial numbers to PDF:', error);
-        showMessageBox('Failed to export serial numbers to PDF.', 'error');
-      } finally {
+        console.error('Error exporting to PDF:', error);
+        await showMessageBox('Error exporting to PDF: ' + error.message, 'alert');
         hideLoading();
       }
     }
 
-    // Copy generated serial numbers to clipboard
-    document.getElementById('copySerialsBtn').addEventListener('click', () => {
-      const generatedSerials = document.getElementById('generatedSerials').textContent;
-      if (generatedSerials) {
-        // Use document.execCommand('copy') as navigator.clipboard.writeText() may not work in iframes
-        const textarea = document.createElement('textarea');
-        textarea.value = generatedSerials;
-        document.body.appendChild(textarea);
-        textarea.select();
-        try {
-          document.execCommand('copy');
-          showMessageBox('Serial numbers copied to clipboard!', 'success');
-        } catch (err) {
-          console.error('Failed to copy text: ', err);
-          showMessageBox('Failed to copy serial numbers.', 'error');
-        }
-        document.body.removeChild(textarea);
-      } else {
-        showMessageBox('No serial numbers to copy.', 'alert');
+    function printLabels() {
+      const previewArea = document.getElementById('previewArea');
+      if (previewArea.children.length === 0) {
+        showMessageBox('No labels to print. Please generate labels first.', 'alert');
+        return;
       }
-    });
 
-    // Load parts into the dropdown and table
+      // Get the current CSS styles, especially the print media query rules
+      let style_html = '';
+      for (const sheet of document.styleSheets) {
+          try {
+              for (const rule of sheet.cssRules) {
+                  style_html += rule.cssText;
+              }
+          } catch (e) {
+              console.warn("Could not read CSS rules from stylesheet (might be cross-origin):", sheet.href, e);
+          }
+      }
+
+      const printContents = previewArea.innerHTML;
+
+      const newWindow = window.open('', '_blank');
+      if (!newWindow) {
+          showMessageBox('Pop-up blocker might be preventing printing. Please allow pop-ups for this site.', 'alert');
+          return;
+      }
+
+      newWindow.document.write('<!DOCTYPE html>');
+      newWindow.document.write('<html lang="en">');
+      newWindow.document.write('<head>');
+      newWindow.document.write('<meta charset="UTF-8">');
+      newWindow.document.write('<meta name="viewport" content="width=device-width, initial-scale=1.0">');
+      newWindow.document.write('<title>Print Labels</title>');
+      newWindow.document.write('<style>');
+      newWindow.document.write(style_html); // Inject all current styles
+      newWindow.document.write('</style>');
+      newWindow.document.write('</head>');
+      newWindow.document.write('<body>');
+      // Ensure the print-specific styles apply by wrapping content in a class
+      newWindow.document.write('<div class="preview-area" style="display:block !important; margin:0 !important; padding:0 !important; border:none !important; background:none !important; box-shadow:none !important; min-height:auto !important; width:auto !important;">');
+      newWindow.document.write(printContents);
+      newWindow.document.write('</div>');
+      newWindow.document.write('</body>');
+      newWindow.document.write('</html>');
+      newWindow.document.close();
+
+      newWindow.onload = function() {
+          newWindow.focus();
+          newWindow.print();
+          setTimeout(function() {
+              newWindow.close();
+          }, 500); // Small delay to allow print dialog to appear before closing
+      };
+    }
+
     async function loadParts() {
       showLoading();
       try {
-        const response = await callGAS('getParts');
-        currentParts = response;
-        populatePartSelect();
-        populatePartsTable();
-      } catch (error) {
-        console.error('Error loading parts:', error);
-        showMessageBox('Failed to load parts. Please check your spreadsheet.', 'error');
-      } finally {
-        hideLoading();
-      }
-    }
+        console.log("loadParts called");
+        const parts = await callGAS('getParts'); // Use callGAS
+        allParts = parts;
+        const partsTableBody = document.querySelector('#partsTable tbody');
+        partsTableBody.innerHTML = '';
+        const partSelect = document.getElementById('partSelect');
+        partSelect.innerHTML = '<option value="">-- Select Part --</option>';
 
-    // Populate the select dropdown for parts
-    function populatePartSelect() {
-      const partSelect = document.getElementById('partSelect');
-      partSelect.innerHTML = '<option value="">Select a Part Number</option>'; // Clear existing options
-      currentParts.forEach(part => {
-        if (part.Active === 'Yes') { // Only show active parts
+        parts.forEach(part => {
+          const row = partsTableBody.insertRow();
+          row.insertCell().textContent = part['Part Number'] || '';
+          row.insertCell().textContent = part.Description || '';
+          row.insertCell().textContent = part['Vendor Code'] || '';
+          row.insertCell().textContent = (part.Active === 'Yes' || part.Active === true) ? 'Yes' : 'No';
+
+          const actionsCell = row.insertCell();
+          const editButton = document.createElement('button');
+          editButton.textContent = 'Edit';
+          editButton.onclick = () => editPart(part);
+          actionsCell.appendChild(editButton);
+
+          const deleteButton = document.createElement('button');
+          deleteButton.textContent = 'Delete';
+          deleteButton.onclick = () => deletePart(part['Part Number']);
+          actionsCell.appendChild(deleteButton);
+
           const option = document.createElement('option');
           option.value = part['Part Number'];
-          option.textContent = `${part['Part Number']} - ${part.Description}`;
+          option.textContent = `${part['Part Number']} - ${part.Description || ''}`;
           partSelect.appendChild(option);
-        }
-      });
-      // Update description and vendor code when a part is selected
-      partSelect.onchange = () => {
-        const selectedPart = currentParts.find(p => p['Part Number'] === partSelect.value);
-        document.getElementById('partDescription').textContent = selectedPart ? `Description: ${selectedPart.Description}` : '';
-        document.getElementById('partVendorCode').textContent = selectedPart ? `Vendor Code: ${selectedPart['Vendor Code']}` : '';
-      };
-      // Trigger change to set initial description/vendor if a part is pre-selected (e.g., after reload)
-      if (partSelect.value) partSelect.onchange();
-    }
+        });
 
-    // Populate parts table
-    function populatePartsTable() {
-      const partsTableBody = document.getElementById('partsTableBody');
-      partsTableBody.innerHTML = '';
-      currentParts.forEach(part => {
-        const row = partsTableBody.insertRow();
-        row.insertCell().textContent = part['Part Number'];
-        row.insertCell().textContent = part.Description;
-        row.insertCell().textContent = part['Vendor Code'];
-        row.insertCell().textContent = part.Active;
-        const actionsCell = row.insertCell();
-        const editBtn = document.createElement('button');
-        editBtn.textContent = 'Edit';
-        editBtn.className = 'btn btn-secondary mr-2';
-        editBtn.onclick = () => editPart(part);
-        actionsCell.appendChild(editBtn);
-
-        const deleteBtn = document.createElement('button');
-        deleteBtn.textContent = 'Delete';
-        deleteBtn.className = 'btn btn-danger';
-        deleteBtn.onclick = () => deletePart(part['Part Number']);
-        actionsCell.appendChild(deleteBtn);
-      });
-    }
-
-    // Add new part
-    async function addPart() {
-      const partNumber = document.getElementById('partNumber').value.trim();
-      const description = document.getElementById('partDescriptionInput').value.trim();
-      const vendorCode = document.getElementById('partVendorCodeInput').value.trim();
-      const active = document.getElementById('partActiveInput').value;
-
-      if (!partNumber || !description || !vendorCode) {
-        showMessageBox('Please fill all Part fields.', 'alert');
-        return;
-      }
-
-      const existingPart = currentParts.find(p => p['Part Number'] === partNumber);
-      if (existingPart) {
-        showMessageBox('Part Number already exists. Please use "Edit" to modify.', 'alert');
-        return;
-      }
-
-      const newPart = {
-        'Part Number': partNumber,
-        Description: description,
-        'Vendor Code': vendorCode,
-        Active: active
-      };
-
-      currentParts.push(newPart); // Add to local array immediately
-      await updatePartsInGAS(); // Send updated array to GAS
-      document.getElementById('partNumber').value = '';
-      document.getElementById('partDescriptionInput').value = '';
-      document.getElementById('partVendorCodeInput').value = '';
-      document.getElementById('partActiveInput').value = 'Yes'; // Reset to default
-      showMessageBox('Part added successfully!', 'success');
-    }
-
-    // Edit part (opens a modal or populates form)
-    function editPart(part) {
-        const newPartNumber = prompt("Edit Part Number:", part['Part Number']);
-        if (newPartNumber !== null) { // Check if user clicked OK
-            const newDescription = prompt("Edit Description:", part.Description);
-            if (newDescription !== null) {
-                const newVendorCode = prompt("Edit Vendor Code:", part['Vendor Code']);
-                if (newVendorCode !== null) {
-                    const newActive = prompt("Edit Active (Yes/No):", part.Active);
-                    if (newActive !== null) {
-                        const updatedActive = (newActive.toLowerCase() === 'yes' || newActive.toLowerCase() === 'y') ? 'Yes' : 'No';
-
-                        const index = currentParts.findIndex(p => p['Part Number'] === part['Part Number']);
-                        if (index !== -1) {
-                            currentParts[index] = {
-                                'Part Number': newPartNumber.trim(),
-                                Description: newDescription.trim(),
-                                'Vendor Code': newVendorCode.trim(),
-                                Active: updatedActive
-                            };
-                            updatePartsInGAS();
-                            showMessageBox('Part updated successfully!', 'success');
-                        }
-                    }
-                }
-            }
-        }
-    }
+        // Update description and vendor code when a part is selected
+        partSelect.onchange = () => {
+          const selectedPart = allParts.find(p => p['Part Number'] === partSelect.value);
+          document.getElementById('partDescription').textContent = selectedPart ? `Description: ${selectedPart.Description}` : '';
+          document.getElementById('partVendorCode').textContent = selectedPart ? `Vendor Code: ${selectedPart['Vendor Code']}` : '';
+        };
+        // Trigger change to set initial description/vendor if a part is pre-selected (e.g., after reload)
+        if (partSelect.value) partSelect.onchange();
 
 
-    // Delete part
-    async function deletePart(partNumber) {
-      if (confirm(`Are you sure you want to delete part ${partNumber}?`)) {
-        currentParts = currentParts.filter(p => p['Part Number'] !== partNumber);
-        await updatePartsInGAS();
-        showMessageBox('Part deleted successfully!', 'success');
-      }
-    }
-
-    // Send updated parts array to GAS
-    async function updatePartsInGAS() {
-      showLoading();
-      try {
-        await callGAS('setParts', currentParts); // Send the entire updated array
-        await loadParts(); // Reload to refresh UI and ensure consistency
       } catch (error) {
-        console.error('Error updating parts in GAS:', error);
-        showMessageBox('Failed to save parts changes.', 'error');
+        document.getElementById('partsError').textContent = 'Error loading parts: ' + error.message;
       } finally {
         hideLoading();
       }
     }
 
-    // Load vendors into the table and part creation dropdown
+    async function addPart() {
+      const partNumber = await showMessageBox('Enter Part Number:', 'prompt');
+      if (partNumber === null || partNumber.trim() === '') {
+        await showMessageBox('Part Number cannot be empty.', 'alert');
+        return;
+      }
+      const trimmedPartNumber = partNumber.trim().toUpperCase();
+
+      if (allParts.some(p => p['Part Number'].toUpperCase() === trimmedPartNumber)) {
+        await showMessageBox(`Part Number "${trimmedPartNumber}" already exists.`, 'alert');
+        return;
+      }
+
+      const description = await showMessageBox('Enter Description (optional):', 'prompt', ''); // Provide empty default
+      if (description === null) return;
+
+      const vendorCode = await showMessageBox('Enter Vendor Code (3 alphanumeric):', 'prompt');
+      if (vendorCode === null || !/^[a-zA-Z0-9]{3}$/.test(vendorCode.trim())) {
+        await showMessageBox('Invalid Vendor Code. Must be 3 alphanumeric characters.', 'alert');
+        return;
+      }
+      const trimmedVendorCode = vendorCode.trim().toUpperCase();
+
+      const isActive = await showMessageBox('Is this part Active? (Yes/No)', 'confirm');
+
+      const newPart = {
+        'Part Number': trimmedPartNumber,
+        Description: description.trim(),
+        'Vendor Code': trimmedVendorCode,
+        Active: isActive ? 'Yes' : 'No'
+      };
+
+      allParts.push(newPart); // Add to local array
+      await callGAS('setParts', allParts); // Send the full updated list to backend
+      await loadParts(); // Reload parts from backend to ensure UI is in sync
+      await showMessageBox('Part added successfully!', 'alert');
+    }
+
+    async function editPart(originalPart) {
+      const newPartNumber = await showMessageBox('Edit Part Number:', 'prompt', originalPart['Part Number']);
+      if (newPartNumber === null || newPartNumber.trim() === '') {
+        await showMessageBox('Part Number cannot be empty.', 'alert');
+        return;
+      }
+      const trimmedNewPartNumber = newPartNumber.trim().toUpperCase();
+
+      if (allParts.some(p => p['Part Number'].toUpperCase() === trimmedNewPartNumber && p['Part Number'].toUpperCase() !== originalPart['Part Number'].toUpperCase())) {
+        await showMessageBox(`Part Number "${trimmedNewPartNumber}" already exists for another part.`, 'alert');
+        return;
+      }
+
+      const newDescription = await showMessageBox('Edit Description:', 'prompt', originalPart.Description);
+      if (newDescription === null) return;
+
+      const newVendorCode = await showMessageBox('Edit Vendor Code:', 'prompt', originalPart['Vendor Code']);
+      if (newVendorCode === null || !/^[a-zA-Z0-9]{3}$/.test(newVendorCode.trim())) {
+        await showMessageBox('Invalid Vendor Code. Must be 3 alphanumeric characters.', 'alert');
+        return;
+      }
+      const trimmedNewVendorCode = newVendorCode.trim().toUpperCase();
+
+      const newIsActive = await showMessageBox('Is this part Active? (Yes/No)', 'confirm');
+
+      const updatedPart = {
+        'Part Number': trimmedNewPartNumber,
+        Description: newDescription.trim(),
+        'Vendor Code': trimmedNewVendorCode,
+        Active: newIsActive ? 'Yes' : 'No'
+      };
+
+      const index = allParts.findIndex(p => p['Part Number'].toUpperCase() === originalPart['Part Number'].toUpperCase());
+      if (index !== -1) {
+        allParts[index] = updatedPart; // Update local array
+        await callGAS('setParts', allParts); // Send the full updated list to backend
+        await loadParts(); // Reload parts from backend to ensure UI is in sync
+        await showMessageBox('Part updated successfully!', 'alert');
+      }
+    }
+
+    async function deletePart(partNumber) {
+      const confirmDelete = await showMessageBox(`Are you sure you want to delete part "${partNumber}"?`, 'confirm');
+      if (confirmDelete) {
+        allParts = allParts.filter(part => part['Part Number'] !== partNumber); // Filter local array
+        await callGAS('setParts', allParts); // Send the filtered list to backend
+        await loadParts(); // Reload parts from backend to ensure UI is in sync
+        await showMessageBox('Part deleted successfully!', 'alert');
+      }
+    }
+
     async function loadVendors() {
       showLoading();
       try {
-        const response = await callGAS('getVendors');
-        currentVendors = response;
-        populateVendorsTable();
-        populatePartVendorSelect(); // Always update part vendor select when vendors are loaded
+        console.log("loadVendors called");
+        const vendors = await callGAS('getVendors'); // Use callGAS
+        const vendorsTableBody = document.querySelector('#vendorsTable tbody');
+        vendorsTableBody.innerHTML = '';
+
+        vendors.forEach(vendor => {
+          const row = vendorsTableBody.insertRow();
+          row.insertCell().textContent = vendor.Code || '';
+          row.insertCell().textContent = vendor.Name || '';
+
+          const actionsCell = row.insertCell();
+          const editButton = document.createElement('button');
+          editButton.textContent = 'Edit';
+          editButton.onclick = () => editVendor(vendor);
+          actionsCell.appendChild(editButton);
+
+          const deleteButton = document.createElement('button');
+          deleteButton.textContent = 'Delete';
+          deleteButton.onclick = () => deleteVendor(vendor.Code);
+          actionsCell.appendChild(deleteButton);
+        });
       } catch (error) {
-        console.error('Error loading vendors:', error);
-        showMessageBox('Failed to load vendors. Please check your spreadsheet.', 'error');
+        document.getElementById('vendorsError').textContent = 'Error loading vendors: ' + error.message;
       } finally {
         hideLoading();
       }
     }
 
-    // Populate vendors table
-    function populateVendorsTable() {
-      const vendorsTableBody = document.getElementById('vendorsTableBody');
-      vendorsTableBody.innerHTML = '';
-      currentVendors.forEach(vendor => {
-        const row = vendorsTableBody.insertRow();
-        row.insertCell().textContent = vendor.Code;
-        row.insertCell().textContent = vendor.Name;
-        const actionsCell = row.insertCell();
-        const editBtn = document.createElement('button');
-        editBtn.textContent = 'Edit';
-        editBtn.className = 'btn btn-secondary mr-2';
-        editBtn.onclick = () => editVendor(vendor);
-        actionsCell.appendChild(editBtn);
-
-        const deleteBtn = document.createElement('button');
-        deleteBtn.textContent = 'Delete';
-        deleteBtn.className = 'btn btn-danger';
-        deleteBtn.onclick = () => deleteVendor(vendor.Code);
-        actionsCell.appendChild(deleteBtn);
-      });
-    }
-
-    // Populate the vendor select dropdown for parts management
-    function populatePartVendorSelect() {
-      const partVendorCodeSelect = document.getElementById('partVendorCodeInput');
-      partVendorCodeSelect.innerHTML = '<option value="">Select Vendor</option>'; // Clear existing options
-      currentVendors.forEach(vendor => {
-        const option = document.createElement('option');
-        option.value = vendor.Code;
-        option.textContent = `${vendor.Code} - ${vendor.Name}`;
-        partVendorCodeSelect.appendChild(option);
-      });
-    }
-
-    // Add new vendor
     async function addVendor() {
-      const vendorCode = document.getElementById('vendorCode').value.trim();
-      const vendorName = document.getElementById('vendorName').value.trim();
+      const code = await showMessageBox('Enter Vendor Code:', 'prompt');
+      if (code === null || code.trim() === '') {
+        await showMessageBox('Vendor Code cannot be empty.', 'alert');
+        return;
+      }
+      const trimmedCode = code.trim().toUpperCase();
 
-      if (!vendorCode || !vendorName) {
-        showMessageBox('Please fill all Vendor fields.', 'alert');
+      const vendors = await callGAS('getVendors'); // Fetch current list to check for duplicates
+      if (vendors.some(v => v.Code.toUpperCase() === trimmedCode)) {
+        await showMessageBox(`Vendor Code "${trimmedCode}" already exists.`, 'alert');
         return;
       }
 
-      const existingVendor = currentVendors.find(v => v.Code === vendorCode);
-      if (existingVendor) {
-        showMessageBox('Vendor Code already exists. Please use "Edit" to modify.', 'alert');
+      const name = await showMessageBox('Enter Vendor Name:', 'prompt');
+      if (name === null || name.trim() === '') {
+        await showMessageBox('Vendor Name cannot be empty.', 'alert');
         return;
       }
+      const trimmedName = name.trim();
 
       const newVendor = {
-        Code: vendorCode,
-        Name: vendorName
+        Code: trimmedCode,
+        Name: trimmedName
       };
 
-      currentVendors.push(newVendor); // Add to local array immediately
-      await updateVendorsInGAS(); // Send updated array to GAS
-      document.getElementById('vendorCode').value = '';
-      document.getElementById('vendorName').value = '';
-      showMessageBox('Vendor added successfully!', 'success');
+      vendors.push(newVendor); // Add to local array
+      await callGAS('setVendors', vendors); // Send the full updated list to backend
+      await loadVendors(); // Reload vendors from backend to ensure UI is in sync
+      await showMessageBox('Vendor added successfully!', 'alert');
     }
 
-    // Edit vendor
-    function editVendor(vendor) {
-      const newVendorCode = prompt("Edit Vendor Code:", vendor.Code);
-      if (newVendorCode !== null) {
-          const newVendorName = prompt("Edit Vendor Name:", vendor.Name);
-          if (newVendorName !== null) {
-              const index = currentVendors.findIndex(v => v.Code === vendor.Code);
-              if (index !== -1) {
-                  currentVendors[index] = {
-                      Code: newVendorCode.trim(),
-                      Name: newVendorName.trim()
-                  };
-                  updateVendorsInGAS();
-                  showMessageBox('Vendor updated successfully!', 'success');
-              }
-          }
+    async function editVendor(originalVendor) {
+      const newCode = await showMessageBox('Edit Vendor Code:', 'prompt', originalVendor.Code);
+      if (newCode === null || newCode.trim() === '') {
+        await showMessageBox('Vendor Code cannot be empty.', 'alert');
+        return;
+      }
+      const trimmedNewCode = newCode.trim().toUpperCase();
+
+      const vendors = await callGAS('getVendors'); // Fetch current list to check for duplicates
+      if (vendors.some(v => v.Code.toUpperCase() === trimmedNewCode && v.Code.toUpperCase() !== originalVendor.Code.toUpperCase())) {
+        await showMessageBox(`Vendor Code "${trimmedNewCode}" already exists for another vendor.`, 'alert');
+        return;
+      }
+
+      const newName = await showMessageBox('Edit Vendor Name:', 'prompt', originalVendor.Name);
+      if (newName === null || newName.trim() === '') {
+        await showMessageBox('Vendor Name cannot be empty.', 'alert');
+        return;
+      }
+      const trimmedNewName = newName.trim();
+
+      const updatedVendor = {
+        Code: trimmedNewCode,
+        Name: trimmedNewName
+      };
+
+      const index = vendors.findIndex(v => v.Code.toUpperCase() === originalVendor.Code.toUpperCase());
+      if (index !== -1) {
+        vendors[index] = updatedVendor; // Update local array
+        await callGAS('setVendors', vendors); // Send the full updated list to backend
+        await loadVendors(); // Reload vendors from backend to ensure UI is in sync
+        await showMessageBox('Vendor updated successfully!', 'alert');
       }
     }
 
-    // Delete vendor
     async function deleteVendor(vendorCode) {
-      if (confirm(`Are you sure you want to delete vendor ${vendorCode}?`)) {
-        currentVendors = currentVendors.filter(v => v.Code !== vendorCode);
-        await updateVendorsInGAS();
-        showMessageBox('Vendor deleted successfully!', 'success');
+      const confirmDelete = await showMessageBox(`Are you sure you want to delete vendor "${vendorCode}"?`, 'confirm');
+      if (confirmDelete) {
+        const vendors = await callGAS('getVendors'); // Fetch current list
+        const updatedVendors = vendors.filter(vendor => vendor.Code !== vendorCode); // Filter local array
+        await callGAS('setVendors', updatedVendors); // Send the filtered list to backend
+        await loadVendors(); // Reload vendors from backend to ensure UI is in sync
+        await showMessageBox('Vendor deleted successfully!', 'alert');
       }
     }
 
-    // Send updated vendors array to GAS
-    async function updateVendorsInGAS() {
+    /**
+     * Loads history entries with pagination and optional filtering.
+     * @param {number} page - The page number to load (1-based).
+     */
+    async function loadHistory(page = 1) {
       showLoading();
       try {
-        await callGAS('setVendors', currentVendors); // Send the entire updated array
-        await loadVendors(); // Reload to refresh UI and ensure consistency
-      } catch (error) {
-        console.error('Error updating vendors in GAS:', error);
-        showMessageBox('Failed to save vendor changes.', 'error');
-      } finally {
-        hideLoading();
-      }
-    }
-
-    // Load history data with pagination and filters
-    async function loadHistory(applyFilter = false) {
-      showLoading();
-      try {
-        const serialSearch = document.getElementById('historySerialSearch').value.trim();
-        const partSearch = document.getElementById('historyPartSearch').value.trim();
+        console.log(`loadHistory called for page ${page}`);
+        currentPage = page;
+        const offset = (currentPage - 1) * itemsPerPage;
 
         const payload = {
-          offset: (currentPage - 1) * itemsPerPage,
+          offset: offset,
           limit: itemsPerPage,
-          serial: serialSearch,
-          part: partSearch
+          serial: currentHistoryFilter.serial, // Apply current filter
+          part: currentHistoryFilter.part      // Apply current filter
         };
 
-        const response = await callGAS('getPaginatedHistory', payload);
-        const historyData = response.data;
-        const totalItems = response.total;
+        // Call the new paginated history function
+        const response = await callGAS('getPaginatedHistory', payload); // Use callGAS
+        const history = response.data;
+        totalHistoryEntries = response.total;
 
-        const historyTableBody = document.getElementById('historyTableBody');
+        currentDisplayedHistory = history; // Store for export functionality
+        const historyTableBody = document.querySelector('#historyTable tbody');
         historyTableBody.innerHTML = '';
 
-        if (historyData.length === 0 && applyFilter) {
-          showMessageBox('No matching history records found for the applied filter.', 'alert');
-        } else if (historyData.length === 0) {
-          showMessageBox('No history records found.', 'alert');
-        }
-
-        historyData.forEach(entry => {
-          const row = historyTableBody.insertRow();
-          row.insertCell().textContent = entry.Serial;
-          row.insertCell().textContent = entry.Part;
-          row.insertCell().textContent = entry.Description;
-          row.insertCell().textContent = entry['Vendor Code'];
-          row.insertCell().textContent = entry.Date;
-          row.insertCell().textContent = entry.Counter;
-        });
-
-        updatePaginationControls(totalItems);
-
-      } catch (error) {
-        console.error('Error loading history:', error);
-        showMessageBox('Failed to load history.', 'error');
-      } finally {
-        hideLoading();
-      }
-    }
-
-    // Pagination controls logic
-    function updatePaginationControls(totalItems) {
-      const totalPages = Math.ceil(totalItems / itemsPerPage);
-      document.getElementById('pageInfo').textContent = `Page ${currentPage} of ${totalPages || 1}`;
-      document.getElementById('prevPageBtn').disabled = currentPage === 1;
-      document.getElementById('nextPageBtn').disabled = currentPage === totalPages || totalPages === 0;
-    }
-
-    function changePage(direction) {
-      const totalItems = parseInt(document.getElementById('pageInfo').textContent.split(' ')[3]); // Extract total from "Page X of Y"
-      const totalPages = Math.ceil(totalItems / itemsPerPage);
-      const newPage = currentPage + direction;
-
-      if (newPage >= 1 && newPage <= totalPages) {
-        currentPage = newPage;
-        loadHistory();
-      }
-    }
-
-    // Export filtered history to CSV
-    async function exportFilteredHistory() {
-      showLoading();
-      try {
-        const serialSearch = document.getElementById('historySerialSearch').value.trim();
-        const partSearch = document.getElementById('historyPartSearch').value.trim();
-
-        const payload = {
-          serial: serialSearch,
-          part: partSearch
-        };
-        const response = await callGAS('getFilteredHistory', payload); // Get all filtered data
-        
-        if (response.length === 0) {
-          showMessageBox('No records to export with the current filter.', 'alert');
-          return;
-        }
-
-        const headers = Object.keys(response[0]);
-        let csv = headers.join(',') + '\n';
-        response.forEach(row => {
-          csv += headers.map(header => `"${String(row[header]).replace(/"/g, '""')}"`).join(',') + '\n';
-        });
-
-        const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
-        const link = document.createElement('a');
-        link.href = URL.createObjectURL(blob);
-        link.download = 'filtered_history.csv';
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-        showMessageBox('Filtered history exported to Excel (CSV) successfully!', 'success');
-      } catch (error) {
-        console.error('Error exporting filtered history:', error);
-        showMessageBox('Failed to export filtered history.', 'error');
-      } finally {
-        hideLoading();
-      }
-    }
-
-    // Export all history to CSV
-    async function exportAllHistory() {
-      showLoading();
-      try {
-        const response = await callGAS('getHistory'); // Get all history data
-        
-        if (response.length === 0) {
-          showMessageBox('No history records to export.', 'alert');
-          return;
-        }
-
-        const headers = Object.keys(response[0]);
-        let csv = headers.join(',') + '\n';
-        response.forEach(row => {
-          csv += headers.map(header => `"${String(row[header]).replace(/"/g, '""')}"`).join(',') + '\n';
-        });
-
-        const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
-        const link = document.createElement('a');
-        link.href = URL.createObjectURL(blob);
-        link.download = 'all_history.csv';
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-        showMessageBox('All history exported to Excel (CSV) successfully!', 'success');
-      } catch (error) {
-        console.error('Error exporting all history:', error);
-        showMessageBox('Failed to export all history.', 'error');
-      } finally {
-        hideLoading();
-      }
-    }
-
-
-    // Fetch and set the logo from Google Drive
-    async function getTeslaLogoBase64() {
-      showLoading();
-      try {
-        // Replace with your actual Drive file ID for the logo
-        const fileId = "1en7umlfHN1huVyIsNNib8FzzJdPaiDvP"; 
-        const data = await callGAS("getLogoBase64FromDrive", { fileId: fileId });
-        if (data && data !== 'ERROR_LOADING_LOGO') {
-          TESLA_LOGO_BASE64 = data;
-          document.getElementById('logo').src = TESLA_LOGO_BASE64;
+        if (history && history.length > 0) {
+          history.forEach(entry => {
+            const row = historyTableBody.insertRow();
+            row.innerHTML = [
+              '<td>' + (entry.Serial || '') + '</td>',
+              '<td>' + (entry.Part || '') + '</td>',
+              '<td>' + (entry.Description || '') + '</td>',
+              '<td>' + (entry['Vendor Code'] || '') + '</td>',
+              '<td>' + (entry.Date ? new Date(entry.Date).toLocaleString() : '') + '</td>',
+              '<td>' + (entry.Counter || '') + '</td>',
+              '</tr>'
+            ].join('');
+          });
         } else {
-          console.warn("Failed to load logo from Drive, using placeholder.");
-          document.getElementById('logo').src = 'https://placehold.co/100x100?text=Logo';
+          historyTableBody.innerHTML = '<tr><td colspan="6" style="text-align: center;">No history entries found.</td></tr>';
         }
-      } catch (err) {
-        console.error("Failed to load logo:", err);
-        document.getElementById('logo').src = 'https://placehold.co/100x100?text=Logo'; // Fallback to placeholder
+
+        updatePaginationControls();
+
+      } catch (error) {
+        document.getElementById('historyError').textContent = 'Error loading history: ' + error.message;
+        console.error('Error loading history:', error);
       } finally {
         hideLoading();
       }
+    }
+
+    /**
+     * Updates the state of pagination buttons and page information display.
+     */
+    function updatePaginationControls() {
+      const totalPages = Math.ceil(totalHistoryEntries / itemsPerPage);
+      document.getElementById('historyPageInfo').textContent = `Page ${currentPage} of ${totalPages || 1}`;
+      document.getElementById('prevHistoryPage').disabled = currentPage <= 1;
+      document.getElementById('nextHistoryPage').disabled = currentPage >= totalPages;
+    }
+
+    /**
+     * Navigates to the previous page of history.
+     */
+    function previousHistoryPage() {
+      if (currentPage > 1) {
+        loadHistory(currentPage - 1);
+      }
+    }
+
+    /**
+     * Navigates to the next page of history.
+     */
+    function nextHistoryPage() {
+      const totalPages = Math.ceil(totalHistoryEntries / itemsPerPage);
+      if (currentPage < totalPages) {
+        loadHistory(currentPage + 1);
+      }
+    }
+
+    /**
+     * Applies search filters to the history and reloads the first page.
+     */
+    async function filterHistory() {
+      const serialSearchTerm = document.getElementById('historySerialSearch').value.trim().toLowerCase();
+      const partSearchTerm = document.getElementById('historyPartSearch').value.trim().toLowerCase();
+
+      currentHistoryFilter.serial = serialSearchTerm;
+      currentHistoryFilter.part = partSearchTerm;
+
+      // Reset to first page when applying a new filter
+      await loadHistory(1);
+    }
+
+    /**
+     * Exports history data to an Excel (CSV) file.
+     * @param {boolean} filtered - True to export currently filtered data, false to export all history.
+     */
+    async function exportHistoryToExcel(filtered) {
+      showLoading();
+      try {
+        let dataToExport = [];
+        if (filtered) {
+          // If filtered export, fetch ALL filtered data, not just the currently displayed page
+          const serialSearchTerm = document.getElementById('historySerialSearch').value.trim().toLowerCase();
+          const partSearchTerm = document.getElementById('historyPartSearch').value.trim().toLowerCase();
+          dataToExport = await callGAS('getFilteredHistory', { // Use callGAS
+            serial: serialSearchTerm,
+            part: partSearchTerm
+          });
+        } else {
+          // If "Export All" is clicked, fetch all history
+          dataToExport = await callGAS('getHistory'); // Use callGAS
+        }
+        
+        if (!dataToExport || dataToExport.length === 0) {
+          showMessageBox('No data to export.', 'alert');
+          return;
+        }
+
+        performExport(dataToExport); // This function remains the same
+      } catch (error) {
+        document.getElementById('historyError').textContent = 'Error fetching history for export: ' + error.message;
+        console.error('Error fetching history for export:', error);
+      } finally {
+        hideLoading();
+      }
+    }
+
+    function performExport(data) {
+      // Get headers from the first object
+      const headers = Object.keys(data[0]);
+      let csvContent = headers.map(header => `"${header}"`).join(',') + '\n';
+
+      data.forEach(row => {
+        const rowValues = headers.map(header => {
+          let value = row[header] ?? '';
+          // Special handling for Date column to ensure consistent format in CSV
+          if (header === 'Date' && value) {
+            value = new Date(value).toLocaleString(); // Format date for CSV
+          }
+          // Escape double quotes by doubling them
+          if (typeof value === 'string') {
+            value = value.replace(/"/g, '""');
+          }
+          return `"${value}"`;
+        });
+        csvContent += rowValues.join(',') + '\n';
+      });
+
+      const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+      const link = document.createElement('a');
+      const url = URL.createObjectURL(blob);
+      link.setAttribute('href', url);
+      link.setAttribute('download', 'JHM_History.csv');
+      link.style.visibility = 'hidden';
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      showMessageBox('History exported to Excel (CSV) successfully!', 'alert');
     }
 
     // Load initial data on page load
@@ -1167,7 +1621,7 @@
         await Promise.all([
           loadParts(), 
           loadVendors(), 
-          // loadHistory() is now called when the history tab is clicked or explicitly for "Export All"
+          // Replaced google.script.run with callGAS for getCounter
           callGAS('getCounter').then(function(response) {
               if (response && response.counter !== undefined) {
                   document.getElementById('currentDailyCounterDisplay').textContent = response.counter;
@@ -1188,7 +1642,7 @@
       }
     }
 
-    checkLoginStatus(); // Initial call
+    checkLoginStatus();
   </script>
 </body>
 </html>
