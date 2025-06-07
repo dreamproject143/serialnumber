@@ -6,6 +6,7 @@
   <title>JHM Serial Number Generator</title>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcode.js/1.0.0/qrcode.min.js"></script> <!-- QR Code Library -->
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -61,7 +62,6 @@
         height: 100%;
         background-color: rgba(0, 0, 0, 0.5);
         z-index: 999;
-        display: none; /* Hidden by default */
     }
     
     /* Loading Spinner Styles */
@@ -355,6 +355,7 @@
         <h3 class="text-xl font-semibold text-gray-800 mb-4">Generated Serial Numbers:</h3>
         <pre id="generatedSerials" class="text-gray-700 whitespace-pre-wrap"></pre>
         <button id="copySerialsBtn" class="btn btn-secondary mt-4" style="display: none;">Copy to Clipboard</button>
+        <div id="qrCodesContainer" class="mt-4 grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4"></div> <!-- QR Code display area -->
       </div>
     </div>
 
@@ -488,8 +489,8 @@
 
         messageText.textContent = message;
         messageBox.className = ''; // Clear existing classes
-        messageBox.classList.add('block'); // Show the message box
-        overlay.classList.add('block'); // Show overlay
+        messageBox.classList.remove('hidden'); // Show the message box by removing hidden
+        overlay.classList.remove('hidden'); // Show overlay by removing hidden
 
         // Add type-specific classes for styling
         if (type === 'alert') {
@@ -503,8 +504,8 @@
 
     // Function to hide the custom message box
     function hideMessageBox() {
-        document.getElementById('messageBox').classList.remove('block');
-        document.getElementById('overlay').classList.remove('block');
+        document.getElementById('messageBox').classList.add('hidden'); // Hide by adding hidden
+        document.getElementById('overlay').classList.add('hidden'); // Hide by adding hidden
     }
 
     /**
@@ -629,6 +630,22 @@
 
         generatedSerialsElement.textContent = serials.join('\n');
         copySerialsBtn.style.display = 'block';
+        
+        const qrCodesContainer = document.getElementById('qrCodesContainer');
+        qrCodesContainer.innerHTML = ''; // Clear previous QR codes
+
+        serials.forEach((serial, index) => {
+          const qrCanvas = document.createElement('canvas');
+          qrCanvas.id = `qr-code-${index}`;
+          qrCanvas.className = 'w-full h-auto rounded-md shadow-sm border border-gray-300';
+          qrCodesContainer.appendChild(qrCanvas);
+
+          // Generate QR code onto the canvas
+          QRCode.toCanvas(qrCanvas, serial, { errorCorrectionLevel: 'H', width: 128 }, function (error) {
+            if (error) console.error('QR Code generation error:', error);
+          });
+        });
+
         document.getElementById('currentDailyCounterDisplay').textContent = (currentCounter); // Update displayed counter
 
         showMessageBox(`Successfully generated ${quantity} serial number(s)!`, 'success');
@@ -641,22 +658,49 @@
       }
     }
 
-    // Export generated serial numbers as PDF
-    function exportSerialNumbers() {
-      const generatedSerials = document.getElementById('generatedSerials').textContent;
-      if (!generatedSerials) {
-        showMessageBox('No serial numbers to export.', 'alert');
+    // Export generated serial numbers as PDF (now includes QR codes via html2canvas)
+    async function exportSerialNumbers() {
+      const serialNumberOutput = document.getElementById('serialNumberOutput');
+      if (!serialNumberOutput.textContent.trim() && document.getElementById('qrCodesContainer').children.length === 0) {
+        showMessageBox('No serial numbers or QR codes to export.', 'alert');
         return;
       }
 
-      const { jsPDF } = window.jspdf;
-      const doc = new jsPDF();
+      showLoading();
+      try {
+        const canvas = await html2canvas(serialNumberOutput, { scale: 2 }); // Scale for better resolution
+        const imgData = canvas.toDataURL('image/png');
+        const { jsPDF } = window.jspdf;
+        const doc = new jsPDF({
+          orientation: 'portrait',
+          unit: 'mm',
+          format: 'a4'
+        });
 
-      doc.setFontSize(12);
-      const lines = doc.splitTextToSize(generatedSerials, 180);
-      doc.text(lines, 10, 10);
-      doc.save('generated_serial_numbers.pdf');
-      showMessageBox('Serial numbers exported to PDF successfully!', 'success');
+        const imgWidth = 200; // A4 width minus margins (approx 210mm - 10mm*2)
+        const pageHeight = doc.internal.pageSize.height;
+        const imgHeight = (canvas.height * imgWidth) / canvas.width;
+        let heightLeft = imgHeight;
+        let position = 0;
+
+        doc.addImage(imgData, 'PNG', 5, position + 5, imgWidth, imgHeight);
+        heightLeft -= pageHeight;
+
+        while (heightLeft >= 0) { // Check if there's more content than one page
+          position = heightLeft - imgHeight;
+          doc.addPage();
+          doc.addImage(imgData, 'PNG', 5, position + 5, imgWidth, imgHeight);
+          heightLeft -= pageHeight;
+        }
+
+        doc.save('generated_serial_numbers_with_qr.pdf');
+        showMessageBox('Serial numbers and QR codes exported to PDF successfully!', 'success');
+      } catch (error) {
+        console.error('Error exporting serial numbers to PDF:', error);
+        showMessageBox('Failed to export serial numbers to PDF.', 'error');
+      } finally {
+        hideLoading();
+      }
     }
 
     // Copy generated serial numbers to clipboard
