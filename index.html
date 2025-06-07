@@ -625,7 +625,7 @@
     console.log("Script loaded successfully");
     var jsPDF = window.jspdf.jsPDF;
     // IMPORTANT: Replace 'YOUR_DEPLOYED_WEB_APP_URL' with the actual URL you got after deploying your GAS project.
-    const GAS_WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbxY_gnIJJdcq2Ut9_iJEmdl-sIZp0aj3GynM4gdVINiKdlJoYOR7inEynqnirXa54-PIQ/exec'; 
+    const GAS_WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbxY_gnIJJdcq2Ut9_iJEmdl-sIZ0aj3GynM4gdVINiKdlJoYOR7inEynqnirXa54-PIQ/exec'; 
     var TESLA_LOGO_FILE_ID = '1en7umlfHN1huVyIsNNib8FzzJdPaiDvX'; // This ID is from your previous code and refers to a Google Drive file.
     var TESLA_LOGO_BASE64 = ''; 
     var allParts = [];
@@ -1563,14 +1563,16 @@
           (async () => {
               try {
                   const response = await callGAS('getCounter', {});
-                  if (response && response.counter !== undefined) {
-                      document.getElementById('currentDailyCounterDisplay').textContent = response.counter;
-                  } else {
-                      document.getElementById('currentDailyCounterDisplay').textContent = 'N/A';
-                  }
+                  // Removed the line attempting to update 'currentDailyCounterDisplay' as the element is not in HTML
+                  // if (response && response.counter !== undefined) {
+                  //     document.getElementById('currentDailyCounterDisplay').textContent = response.counter;
+                  // } else {
+                  //     document.getElementById('currentDailyCounterDisplay').textContent = 'N/A';
+                  // }
               } catch (error) {
                   console.error("Error loading counter:", error);
-                  document.getElementById('currentDailyCounterDisplay').textContent = 'Error';
+                  // Removed the line attempting to update 'currentDailyCounterDisplay'
+                  // document.getElementById('currentDailyCounterDisplay').textContent = 'Error';
               }
           })()
         ]);
