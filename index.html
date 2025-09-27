@@ -3,36 +3,30 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>VKM Label Generator (T)</title>
+  <title>VKM Label Generator (Supabase)</title>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+  <!-- Supabase library -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
-  
   <style id="ui-styles">
-    /* --- STYLES FOR NEW COMPACT HEADER LAYOUT --- */
     body {
       font-family: 'Montserrat', 'Segoe UI', Roboto, 'Helvetica Neue', Arial, 'Noto Sans', sans-serif;
       margin: 0;
       background-color: #f4f4f4;
     }
-
-    /* NEW: Main sticky container for both header bars */
     #app-header {
       position: -webkit-sticky;
       position: sticky;
       top: 0;
       z-index: 100;
     }
-
-    /* NEW: Top bar for Title and Logout */
     #top-bar {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      background-color: #2c3e50; /* Dark blue/grey */
+      background-color: #2c3e50;
       color: white;
       padding: 12px 30px;
     }
@@ -71,8 +65,6 @@
       background-color: #c0392b;
       transform: none;
     }
-
-    /* NEW: Second bar for Tabs and Actions */
     #nav-action-bar {
       background-color: #fff;
       padding: 0 30px;
@@ -107,7 +99,6 @@
       background: #f5f5f5;
       color: #333;
     }
-
     #contextual-actions {
       padding: 12px 0;
     }
@@ -119,26 +110,18 @@
     .action-buttons.active {
       display: flex;
     }
-    
-    /* MODIFIED: Main content container styling */
     .container {
       max-width: 1200px;
       width: auto;
-      margin: 25px 30px; /* Spacing from header and sides */
+      margin: 25px 30px;
       background-color: #fff;
       border-radius: 8px;
       box-shadow: 0 4px 10px rgba(0,0,0,0.1);
       padding: 25px;
     }
-    .tab-content {
-      display: none;
-    }
-    .tab-content.active {
-      display: block;
-    }
-    .form-group {
-      margin-bottom: 18px;
-    }
+    .tab-content { display: none; }
+    .tab-content.active { display: block; }
+    .form-group { margin-bottom: 18px; }
     label {
       display: block;
       margin-bottom: 8px;
@@ -205,78 +188,44 @@
       background: #1976d2;
       color: white; font-weight: bold;
     }
-    .table tr:nth-child(even) { background-color: #f9f9f9;
-    }
+    .table tr:nth-child(even) { background-color: #f9f9f9; }
     .table tr:hover { background-color: #e3f2fd; }
-    .table button { padding: 6px 12px;
-      font-size: 14px; margin-right: 5px; box-shadow: none; }
+    .table button { padding: 6px 12px; font-size: 14px; margin-right: 5px; box-shadow: none; }
     .error {
-      color: #d32f2f;
-      margin-top: 15px; font-weight: bold; text-align: center; padding: 10px;
+      color: #d32f2f; margin-top: 15px; font-weight: bold; text-align: center; padding: 10px;
       background-color: #ffcdd2; border: 1px solid #ef9a9a; border-radius: 6px;
     }
-    /* Login & Message Box Styles */
-    .message-box-overlay { position: fixed;
-      top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.6); display: none; justify-content: center; align-items: center;
-      z-index: 1000; }
+    .message-box-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.6); display: none; justify-content: center; align-items: center; z-index: 1000; }
     .message-box-overlay.active { display: flex; }
-    .message-box { background: #fff; padding: 30px;
-      border-radius: 10px; box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3); text-align: center; max-width: 400px; width: 90%;
-    }
-    .message-box p { margin-bottom: 20px; font-size: 18px; color: #333;
-    }
-    .message-box input, .message-box select { margin-bottom: 15px; width:100%; padding:10px; border:1px solid #ccc; border-radius: 6px;
-      box-sizing: border-box;}
+    .message-box { background: #fff; padding: 30px; border-radius: 10px; box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3); text-align: center; max-width: 400px; width: 90%; }
+    .message-box p { margin-bottom: 20px; font-size: 18px; color: #333; }
+    .message-box input, .message-box select { margin-bottom: 15px; width:100%; padding:10px; border:1px solid #ccc; border-radius: 6px; box-sizing: border-box;}
     .message-box button { margin: 10px 5px 0; }
-    #loadingOverlay { display: none;
-      position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(255, 255, 255, 0.7); z-index: 9999; justify-content: center;
-      align-items: center; flex-direction: column; }
-    .spinner { border: 8px solid #f3f3f3; border-top: 8px solid #1976d2; border-radius: 50%;
-      width: 60px; height: 60px; animation: spin 1s linear infinite; }
-    @keyframes spin { 0% { transform: rotate(0deg);
-      } 100% { transform: rotate(360deg); } }
-    #loginForm { display: none; flex-direction: column; align-items: center; justify-content: center;
-      min-height: 100vh; width: 100%; }
-    #loginBox { background-color: #fff; padding: 40px; border-radius: 10px;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.1); text-align: center; max-width: 400px; width: 90%; }
-    #loginBox h2 { color: #1976d2;
-      margin-bottom: 25px; }
+    #loadingOverlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(255, 255, 255, 0.7); z-index: 9999; justify-content: center; align-items: center; flex-direction: column; }
+    .spinner { border: 8px solid #f3f3f3; border-top: 8px solid #1976d2; border-radius: 50%; width: 60px; height: 60px; animation: spin 1s linear infinite; }
+    @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+    #loginForm { display: none; flex-direction: column; align-items: center; justify-content: center; min-height: 100vh; width: 100%; }
+    #loginBox { background-color: #fff; padding: 40px; border-radius: 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); text-align: center; max-width: 400px; width: 90%; }
+    #loginBox h2 { color: #1976d2; margin-bottom: 25px; }
     #loginBox .form-group { text-align: left; }
-    #loginBox button { width: 100%;
-      margin-top: 10px; }
-    .pagination-controls { display: flex; justify-content: center; align-items: center; gap: 15px; margin-top: 20px;
-    }
+    #loginBox button { width: 100%; margin-top: 10px; }
+    .pagination-controls { display: flex; justify-content: center; align-items: center; gap: 15px; margin-top: 20px; }
     
-    /* Hides the Counter and Reference columns in the history tables */
-    #historyTable th:nth-child(6),
-    #historyTable td:nth-child(6),
-    #historyTable th:nth-child(7),
-    #historyTable td:nth-child(7),
-    #batchHistoryTable th:nth-child(6),
-    #batchHistoryTable td:nth-child(6),
-    #batchHistoryTable th:nth-child(7),
-    #batchHistoryTable td:nth-child(7) {
+    #historyTable th:nth-child(6), #historyTable td:nth-child(6),
+    #batchHistoryTable th:nth-child(6), #batchHistoryTable td:nth-child(6) {
       display: none;
     }
-
-    @media (max-width: 768px) { .preview-area { transform: scale(0.8); transform-origin: top center;
-      } }
-    
+    @media (max-width: 768px) { .preview-area { transform: scale(0.8); transform-origin: top center; } }
     @media print {
-        body, #app-header, .container, .form-group, .error, #loadingOverlay, #messageBoxOverlay, .pagination-controls, h1, h2, select, input, button {
-            display: none !important;
-        }
-        .preview-area { display: block !important; margin: 0 !important; padding: 0 !important;
-          border: none !important; background: none !important; box-shadow: none !important; min-height: auto !important; width: auto !important;
-        }
-        .label-container { margin: 0; border: none; box-shadow: none; page-break-after: always; overflow: hidden;
-        }
-        .label-container:last-child { page-break-after: auto;
-        }
+        body, #app-header, .container, .form-group, .error, #loadingOverlay, #messageBoxOverlay, .pagination-controls, h1, h2, select, input, button { display: none !important; }
+        .preview-area { display: block !important; margin: 0 !important; padding: 0 !important; border: none !important; background: none !important; box-shadow: none !important; min-height: auto !important; width: auto !important; }
+        .label-container { margin: 0; border: none; box-shadow: none; page-break-after: always; overflow: hidden; }
+        .label-container:last-child { page-break-after: auto; }
     }
   </style>
 
   <style id="pure-label-styles">
+    /* This style block matches your Index.code.txt for the label layout */
     .label-container {
       width: 5cm;
       height: 2.5cm;
@@ -291,21 +240,16 @@
       box-sizing: border-box;
       margin-bottom: 10px;
     }
-
     .qr-code {
-      width: 1.5cm;
-      height: 1.5cm; 
-      margin-left: 0.2cm; 
-      display: flex; 
-      align-items: center; 
-      justify-content: center;
+      padding-top: 0.15cm;
+      padding-bottom: 0.15cm;
+      margin-left: 3.8mm;
     }
-    
     .qr-code img, .qr-code canvas {
-        width: 100% !important;
-        height: 100% !important;
+      width: 1.45cm !important;
+      height: 1.45cm !important;
+      display: block;
     }
-
     .text-info {
       font-family: 'Arial Narrow', 'Helvetica Condensed', sans-serif;
       font-size: 7.5px;
@@ -315,46 +259,30 @@
       text-align: left;
       align-self: start;
       padding-top: 0.29cm;
-      margin-left: 0.1cm;
+      margin-left: 2.4mm;
     }
-
     .text-info p {
       margin: 0;
     }
-
     .hri-text {
       font-family: 'Arial Narrow', 'Helvetica Condensed', sans-serif;
       font-size: 7pt;
-      font-weight: normal;
       text-transform: uppercase;
       color: #000;
       margin: 0;
-      padding: 0;
     }
-
-    .hri-text-mixed {
-      font-family: 'Arial Narrow', 'Helvetica Condensed', sans-serif;
-      font-size: 7pt;
-      font-weight: normal;
-      text-transform: none;
-      color: #000;
-      margin: 0;
-      padding: 0;
-    }
-
     .logo-section {
       display: flex;
       align-items: center;
       justify-content: center;
       padding-top: 1cm;
     }
-
     .logo-section img {
       width: 1.0cm;
       height: 1.1cm;
       object-fit: contain;
       display: block;
-      margin-left: 0.4cm;
+      margin-left: 0.30cm;
     }
   </style>
 </head>
@@ -379,7 +307,7 @@
 
   <div id="app-header" style="display:none;">
     <div id="top-bar">
-      <h1>VKM Label Generator (T)</h1>
+      <h1>VKM Label Generator</h1>
       <div class="header-buttons">
         <button id="showReprintBtn">Show Reprint</button>
         <button id="logoutBtn" class="logout-btn">Logout</button>
@@ -391,7 +319,6 @@
         <div class="tab" data-tab="batch-generate">Batch Label Generate (B)</div>
         <div class="tab" data-tab="reprint" id="reprintTab" style="display: none;">Reprint</div>
         <div class="tab" data-tab="parts">Part Manager</div>
-        <div class="tab" data-tab="vendors">Vendor Manager</div>
         <div class="tab" data-tab="history">Serial History</div>
         <div class="tab" data-tab="batch-history">Batch History</div>
       </div>
@@ -415,10 +342,6 @@
           <button id="addPartBtn">Add Part</button>
           <button id="exportPartsCsvBtn">Export to CSV</button>
         </div>
-        <div data-context="vendors" class="action-buttons">
-          <button id="addVendorBtn">Add Vendor</button>
-          <button id="exportVendorsCsvBtn">Export to CSV</button>
-        </div>
         <div data-context="history" class="action-buttons">
           <button id="filterHistoryBtn">Search History</button>
           <button id="exportHistoryFilteredBtn">Export Filtered</button>
@@ -434,12 +357,12 @@
   <div class="container" id="mainContent" style="display:none;">
     <div id="serial-generate" class="tab-content active">
       <div class="form-group">
-        <label for="partSelectSerial">Part Number (Serial)</label>
+       <label for="partSelectSerial">Part Number (Serial)</label>
         <select id="partSelectSerial"></select>
       </div>
       <div class="form-group">
-        <label for="quantitySerial">Quantity (1-1000)</label>
-        <input type="number" id="quantitySerial" min="1" max="1000" value="1" />
+        <label for="quantitySerial">Quantity (1-150)</label>
+        <input type="number" id="quantitySerial" min="1" max="150" value="1" />
       </div>
       <div class="preview-area" id="previewAreaSerial"></div>
       <div id="generateErrorSerial" class="error" style="display:none;"></div>
@@ -447,12 +370,12 @@
     
     <div id="batch-generate" class="tab-content">
       <div class="form-group">
-        <label for="partSelectBatch">Part Number (Batch)</label>
+         <label for="partSelectBatch">Part Number (Batch)</label>
          <select id="partSelectBatch"></select>
       </div>
       <div class="form-group">
-        <label for="quantityBatch">Quantity (1-1000)</label>
-        <input type="number" id="quantityBatch" min="1" max="1000" value="1" />
+        <label for="quantityBatch">Quantity (1-150)</label>
+        <input type="number" id="quantityBatch" min="1" max="150" value="1" />
       </div>
       <div class="preview-area" id="previewAreaBatch"></div>
       <div id="generateErrorBatch" class="error" style="display:none;"></div>
@@ -460,13 +383,13 @@
      
     <div id="reprint" class="tab-content">
       <div class="form-group">
-        <label for="serialSearch">Serial Number (with (S) or (1T) prefix)</label>
+           <label for="serialSearch">Serial Number (with (S) or (1T) prefix)</label>
         <input type="text" id="serialSearch" placeholder="e.g., (S) HNA25267355001 or (1T) ..." />
       </div>
       <div class="preview-area" id="reprintPreview"></div>
       <div id="reprintError" class="error" style="display:none;"></div>
     </div>
-    
+   
     <div id="parts" class="tab-content">
       <table class="table" id="partsTable">
         <thead>
@@ -480,23 +403,9 @@
             <th>Actions</th>
           </tr>
         </thead>
-        <tbody></tbody>
+           <tbody></tbody>
       </table>
       <div id="partsError" class="error" style="display:none;"></div>
-    </div>
-    
-    <div id="vendors" class="tab-content">
-      <table class="table" id="vendorsTable">
-        <thead>
-           <tr>
-            <th>Code</th>
-            <th>Name</th>
-            <th>Actions</th>
-          </tr>
-        </thead>
-        <tbody></tbody>
-      </table>
-      <div id="vendorsError" class="error" style="display:none;"></div>
     </div>
     
     <div id="history" class="tab-content">
@@ -519,7 +428,7 @@
         <input type="text" id="historyPartSearch" placeholder="Enter full or partial part number">
       </div>
       <table class="table" id="historyTable">
-        <thead><tr><th>Serial</th><th>Part</th><th>Description</th><th>Vendor</th><th>Date</th><th>Counter</th><th>Reference</th></tr></thead>
+        <thead><tr><th>Serial</th><th>Part</th><th>Description</th><th>Vendor</th><th>Date</th><th>Counter</th></tr></thead>
         <tbody></tbody>
       </table>
        <div class="pagination-controls" id="pagination-history"></div>
@@ -535,7 +444,7 @@
           <div class="form-group" style="flex: 1;">
             <label for="batchHistoryEndDate">End Date:</label>
             <input type="date" id="batchHistoryEndDate">
-          </div>
+           </div>
         </div>
         <div class="form-group">
             <label for="batchHistorySerialSearch">Search by Serial:</label>
@@ -543,15 +452,15 @@
          </div>
         <div class="form-group">
              <label for="batchHistoryPartSearch">Search by Part:</label>
-             <input type="text" id="batchHistoryPartSearch" placeholder="Enter full or partial part number">
+              <input type="text" id="batchHistoryPartSearch" placeholder="Enter full or partial part number">
         </div>
            <table class="table" id="batchHistoryTable">
-          <thead><tr><th>Serial</th><th>Part</th><th>Description</th><th>Vendor</th><th>Date</th><th>Counter</th><th>Reference</th></tr></thead>
+          <thead><tr><th>Serial</th><th>Part</th><th>Description</th><th>Vendor</th><th>Date</th><th>Counter</th></tr></thead>
           <tbody></tbody>
         </table>
         <div class="pagination-controls" id="pagination-batch-history"></div>
         <div id="batchHistoryError" class="error" style="display:none;"></div>
-    </div>
+   </div>
   </div>
 
   <div id="messageBoxOverlay" class="message-box-overlay">
@@ -567,26 +476,19 @@
 
   <script>
     // --- SUPABASE SETUP ---
-    // STEP 1: Your Supabase project credentials.
     const SUPABASE_URL = 'https://iiquuthmedevvobqakif.supabase.co';
     const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImlpcXV1dGhtZWRldnZvYnFha2lmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTg3ODQ0OTIsImV4cCI6MjA3NDM2MDQ5Mn0.QHh1RpIxFvkiUGLLliXCID5dJWijiGwqiAXUWNJEcKU';
 
-    // Initialize the Supabase client
     const { createClient } = supabase;
     const db = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-    // STEP 2: Configure your Logo
-    // Upload your logo to Supabase Storage in a public bucket (e.g., 'assets')
-    // and this URL will point to it.
-    // MODIFIED: Changed file extension to .jpg to match your file.
+    // This URL must point to your logo in a public Supabase Storage bucket.
     const LOGO_URL = `${SUPABASE_URL}/storage/v1/object/public/assets/logo.jpg`; 
 
     // --- GLOBAL STATE ---
     const jsPDF = window.jspdf.jsPDF;
-    let TESLA_LOGO_BASE64 = ''; // This will be loaded from the LOGO_URL
+    let TESLA_LOGO_BASE64 = '';
     let allParts = [];
-    let allVendors = [];
-    let labelDataCache = {}; // **NEW**: Caches data for the fast PDF export
     const historyState = {
         Serial: { currentPage: 1, itemsPerPage: 20, total: 0, filter: { serial: '', part: '', startDate: '', endDate: '' } },
         Batch: { currentPage: 1, itemsPerPage: 20, total: 0, filter: { serial: '', part: '', startDate: '', endDate: '' } }
@@ -613,9 +515,8 @@
       try {
         const { data, error } = await db.auth.signInWithPassword({ email, password });
         if (error) throw error;
-        // The onAuthStateChange listener will handle showing the app
       } catch (err) {
-        showError('loginError', 'Login failed: ' + err.message + '. Please check your credentials and ensure the user is set up in Supabase.');
+        showError('loginError', 'Login failed: ' + err.message);
       } finally {
         hideLoading();
       }
@@ -624,20 +525,14 @@
     async function logout() {
       showLoading();
       const { error } = await db.auth.signOut();
-      if (error) {
-        showMessageBox('Logout failed: ' + error.message);
-      }
-      // The onAuthStateChange listener will handle showing the login page
+      if (error) showMessageBox('Logout failed: ' + error.message);
       hideLoading();
     }
     
-    // Function to convert image URL to Base64
     async function imageUrlToBase64(url) {
         try {
             const response = await fetch(url);
-            if (!response.ok) {
-                throw new Error(`Logo not found at ${url}. Make sure it's uploaded and public.`);
-            }
+            if (!response.ok) throw new Error(`Logo not found at ${url}.`);
             const blob = await response.blob();
             return new Promise((resolve, reject) => {
                 const reader = new FileReader();
@@ -646,8 +541,7 @@
                 reader.readAsDataURL(blob);
             });
         } catch (error) {
-            console.error("Failed to load or convert the logo image:", error);
-            // Return a placeholder if the logo fails to load
+            console.error("Failed to load logo:", error);
             return 'https://placehold.co/100x110?text=Logo+Err';
         }
     }
@@ -656,7 +550,7 @@
         showLoading();
         try {
             TESLA_LOGO_BASE64 = await imageUrlToBase64(LOGO_URL);
-            await Promise.all([loadParts(), loadVendors()]);
+            await loadParts();
         } catch (err) {
             console.error('Initialization failed:', err);
             showError('generateErrorSerial', 'Initialization Failed: ' + err.message);
@@ -688,7 +582,6 @@
             });
         });
 
-        // --- Attach all button event listeners ---
         document.getElementById('generateSerialBtn').addEventListener('click', () => generateLabels('Serial'));
         document.getElementById('exportPdfSerialBtn').addEventListener('click', () => exportToPDF('previewAreaSerial'));
         document.getElementById('printSerialBtn').addEventListener('click', () => printLabels('previewAreaSerial'));
@@ -700,8 +593,6 @@
         document.getElementById('printReprintBtn').addEventListener('click', () => printLabels('reprintPreview'));
         document.getElementById('addPartBtn').addEventListener('click', addPart);
         document.getElementById('exportPartsCsvBtn').addEventListener('click', () => exportToCsv(allParts, 'VKM_Parts.csv'));
-        document.getElementById('addVendorBtn').addEventListener('click', addVendor);
-        document.getElementById('exportVendorsCsvBtn').addEventListener('click', () => exportToCsv(allVendors, 'VKM_Vendors.csv'));
         document.getElementById('filterHistoryBtn').addEventListener('click', () => filterHistory('Serial'));
         document.getElementById('exportHistoryFilteredBtn').addEventListener('click', () => exportHistoryToCsv('Serial', true));
         document.getElementById('filterBatchHistoryBtn').addEventListener('click', () => filterHistory('Batch'));
@@ -715,15 +606,6 @@
             if (target.classList.contains('delete-part-btn')) deletePart(partNumber);
         });
 
-        document.getElementById('vendorsTable').addEventListener('click', (event) => {
-            const target = event.target.closest('button');
-            if (!target) return;
-            const vendorCode = target.dataset.vendorCode;
-            if (target.classList.contains('edit-vendor-btn')) editVendor(vendorCode);
-            if (target.classList.contains('delete-vendor-btn')) deleteVendor(vendorCode);
-        });
-
-        // Listen for authentication state changes
         db.auth.onAuthStateChange((event, session) => {
             if (session) {
                 showApp();
@@ -755,14 +637,13 @@
         
         try {
             showError(errorDivId, '');
-            if (!partNumber || !quantity || quantity < 1 || quantity > 1000) { // **MODIFIED**: Increased limit to 1000
-                throw new Error('Please select a part and enter a valid quantity (1-1000).');
+            if (!partNumber || !quantity || quantity < 1 || quantity > 150) { // Quantity limit is now 150
+                throw new Error('Please select a part and enter a valid quantity (1-150).');
             }
 
             const part = allParts.find(p => p.part_number === partNumber);
             if (!part) throw new Error('Part details not found.');
             
-            // Get today's max counter from Supabase
             const now = new Date();
             const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate()).toISOString();
             const { data: maxCounterData, error: counterError } = await db.from(historyTable)
@@ -777,7 +658,6 @@
 
             const year = now.getFullYear().toString().slice(-2);
             const dayOfYear = ("000" + Math.floor((now - new Date(now.getFullYear(), 0, 0)) / 86400000)).slice(-3);
-            const internalPartNo = String(part.internal_part_no || '000').slice(-3);
 
             let entries = [];
             if(type === 'Serial') {
@@ -785,9 +665,11 @@
                     const serialCounter = ("000000" + (counter + i)).slice(-6);
                     const serialBody = part.vendor_code + year + dayOfYear + serialCounter;
                     return {
-                        serial: `(S) ${serialBody}`, part: `(P)${partNumber}`,
-                        description: part.description || '', vendor_code: part.vendor_code,
-                        counter: counter + i, reference: internalPartNo
+                        serial: `(S) ${serialBody}`,
+                        part: `(P)${partNumber}`,
+                        description: part.description || '',
+                        vendor_code: part.vendor_code,
+                        counter: counter + i
                     };
                 });
             } else { // Batch
@@ -796,13 +678,14 @@
                 const finalSerial = '(1T) ' + serialBody;
                 
                 entries = Array.from({ length: quantity }, () => ({
-                    serial: finalSerial, part: `(P)${partNumber}`,
-                    description: part.description || '', vendor_code: part.vendor_code,
-                    counter: counter, reference: internalPartNo
+                    serial: finalSerial,
+                    part: `(P)${partNumber}`,
+                    description: part.description || '',
+                    vendor_code: part.vendor_code,
+                    counter: counter
                 }));
             }
             
-            // Insert new entries into the database
             const { error: insertError } = await db.from(historyTable).insert(entries);
             if(insertError) throw insertError;
             
@@ -828,16 +711,11 @@
                 .select('*')
                 .eq('serial', serial)
                 .limit(1)
-                .single(); // .single() returns one object or an error if not found
+                .single();
 
             if (error) throw new Error('Serial not found.');
-
-            // The data from Supabase needs property names adjusted for renderLabels
-            const entry = {
-                Serial: data.serial, Part: data.part, Reference: data.reference
-            };
-
-            renderLabels('reprintPreview', [entry]);
+            
+            renderLabels('reprintPreview', [data]);
         } catch (err) {
             showError('reprintError', 'Error: ' + err.message);
         } finally {
@@ -851,21 +729,15 @@
 
         entries.forEach((entry, i) => {
             const uniqueId = `${previewAreaId}-qr-${i}`;
-            // Use the correct property names from the generated entries
-            const partText = entry.part || entry.Part;
-            const serialText = entry.serial || entry.Serial;
-            const referenceText = entry.reference || entry.Reference;
-            
             labelsHTML += `
                 <div class="label-container">
                   <div class="qr-code" id="${uniqueId}"></div>
-                  <div class="text-info">
-                    <p class="hri-text">${partText}</p>
-                    <p class="hri-text">${serialText}</p>
-                    <p class="hri-text-mixed">Reference : ${referenceText || ''}</p>
+                   <div class="text-info">
+                    <p class="hri-text">${entry.part}</p>
+                    <p class="hri-text">${entry.serial}</p>
                   </div>
-                  <div class="logo-section">
-                    <img src="${TESLA_LOGO_BASE64}" alt="Logo">
+                   <div class="logo-section">
+                     <img src="${TESLA_LOGO_BASE64}" alt="Logo">
                   </div>
                 </div>`;
         });
@@ -873,22 +745,16 @@
 
         entries.forEach((entry, i) => {
             const uniqueId = `${previewAreaId}-qr-${i}`;
-            const partText = entry.part || entry.Part;
-            const serialText = entry.serial || entry.Serial;
-
-            const qrPart = partText.replace('(P)', '');
-            const qrSerial = serialText.replace(/[()\s]/g, '');
+            const qrPart = entry.part.replace('(P)', '');
+            const qrSerial = entry.serial.replace(/[()\s]/g, '');
             const qrData = `P${qrPart}:${qrSerial}`;
             new QRCode(document.getElementById(uniqueId), {
-                text: qrData,
+                 text: qrData,
                 width: 57,
                 height: 57,
                 correctLevel: QRCode.CorrectLevel.L
             });
         });
-
-        // **MODIFIED**: Cache the data for the fast PDF export
-        labelDataCache[previewAreaId] = entries;
     }
 
     // --- HISTORY ---
@@ -918,7 +784,6 @@
             query = query.order('created_at', { ascending: false }).range(offset, offset + limit - 1);
             
             const { data, error, count } = await query;
-            
             if(error) throw error;
 
             historyState[type].total = count;
@@ -940,7 +805,7 @@
                     <td>${entry.serial || ''}</td><td>${entry.part || ''}</td>
                     <td>${entry.description || ''}</td><td>${entry.vendor_code || ''}</td>
                     <td>${entry.created_at ? new Date(entry.created_at).toLocaleString() : ''}</td>
-                    <td>${entry.counter || ''}</td><td>${entry.reference || ''}</td>
+                    <td>${entry.counter || ''}</td>
                 </tr>`;
             });
         } else {
@@ -949,7 +814,7 @@
         tableBody.innerHTML = tableHTML;
     }
 
-    // --- PARTS & VENDORS ---
+    // --- PARTS ---
     async function loadParts() {
         showLoading();
         try {
@@ -996,32 +861,6 @@
         batchSelect.innerHTML = batchOptions;
     }
 
-    async function loadVendors() {
-        showLoading();
-        try {
-            const { data, error } = await db.from('vendors').select('*').order('code');
-            if (error) throw error;
-            allVendors = data;
-            renderVendorsTable(allVendors);
-        } catch (err) {
-            showError('vendorsError', 'Error: ' + err.message);
-        } finally {
-            hideLoading();
-        }
-    }
-
-    function renderVendorsTable(vendors) {
-        let tableHTML = '';
-        vendors.forEach(v => {
-            tableHTML += `<tr>
-                <td>${v.code}</td><td>${v.name}</td>
-                <td><button class="edit-vendor-btn" data-vendor-code="${v.code}">Edit</button>
-                <button class="delete-vendor-btn" data-vendor-code="${v.code}">Delete</button></td>
-            </tr>`;
-        });
-        document.querySelector('#vendorsTable tbody').innerHTML = tableHTML;
-    }
-
     async function addPart() {
         if (!await askForPassword("Enter admin password to add part:")) return;
         const result = await showMessageBox('Add New Part', [ { id: 'partNumber', placeholder: 'Part Number' }, { id: 'description', placeholder: 'Description' }, { id: 'vendorCode', placeholder: 'Vendor Code' }, { id: 'labelType', type: 'select', options: [{value: 'Serial', text: 'Serial'}, {value: 'Batch', text: 'Batch'}] }, { id: 'active', type: 'select', options: [{value: 'Yes', text: 'Yes'}, {value: 'No', text: 'No'}] }, { id: 'internalPartNo', placeholder: 'Internal Part No' } ]);
@@ -1038,20 +877,6 @@
 
         showLoading();
         try {
-            // FIX: Check if vendor code exists before inserting
-            const { data: vendorData, error: vendorError } = await db.from('vendors').select('code').eq('code', newPart.vendor_code).limit(1);
-            if (vendorError) throw vendorError;
-            if (!vendorData || vendorData.length === 0) {
-                throw new Error(`Vendor code "${newPart.vendor_code}" does not exist. Please create the vendor first.`);
-            }
-
-            // FIX: Check if part number already exists to prevent conflict
-            const { data: partData, error: partError } = await db.from('parts').select('part_number').eq('part_number', newPart.part_number).limit(1);
-            if (partError) throw partError;
-            if (partData && partData.length > 0) {
-                 throw new Error(`Part number "${newPart.part_number}" already exists.`);
-            }
-
             const { error } = await db.from('parts').insert(newPart);
             if(error) throw error;
             await loadParts(); 
@@ -1059,6 +884,7 @@
             showError('partsError', 'Error: ' + err.message);
         } finally { hideLoading(); }
     }
+
     async function editPart(partNumber) {
         if (!await askForPassword("Enter admin password to edit part:")) return;
         const part = allParts.find(p => p.part_number === partNumber);
@@ -1078,13 +904,6 @@
 
         showLoading();
         try { 
-            // FIX: Check if vendor code exists before updating
-            const { data: vendorData, error: vendorError } = await db.from('vendors').select('code').eq('code', updatedPart.vendor_code).limit(1);
-            if(vendorError) throw vendorError;
-            if (!vendorData || vendorData.length === 0) {
-                throw new Error(`Vendor code "${updatedPart.vendor_code}" does not exist. Please create the vendor first.`);
-            }
-
             const { error } = await db.from('parts').update(updatedPart).eq('part_number', partNumber);
             if(error) throw error;
             await loadParts(); 
@@ -1092,6 +911,7 @@
             showError('partsError', 'Error: ' + err.message);
         } finally { hideLoading(); }
     }
+
     async function deletePart(partNumber) {
         if (!await askForPassword("Enter admin password to delete part:")) return;
         if (await showMessageBox('Are you sure you want to delete part "' + partNumber + '"?', [], true)) {
@@ -1104,44 +924,7 @@
             }
         }
     }
-    async function addVendor() {
-        if (!await askForPassword("Enter admin password to add vendor:")) return;
-        const result = await showMessageBox('Add New Vendor', [ { id: 'code', placeholder: 'Vendor Code' }, { id: 'name', placeholder: 'Vendor Name' } ]);
-        if (!result || !result.code || !result.name) return;
-        showLoading();
-        try { 
-            const { error } = await db.from('vendors').insert({ code: result.code.trim().toUpperCase(), name: result.name.trim() });
-            if (error) throw error;
-            await loadVendors();
-        } catch (err) { showError('vendorsError', 'Error: ' + err.message); } finally { hideLoading();
-        }
-    }
-    async function editVendor(code) {
-        if (!await askForPassword("Enter admin password to edit vendor:")) return;
-        const vendor = allVendors.find(v => v.code === code);
-        const result = await showMessageBox('Edit Vendor', [ { id: 'code', value: vendor.code }, { id: 'name', value: vendor.name } ]);
-        if (!result) return;
-        showLoading();
-        try { 
-            const { error } = await db.from('vendors').update({ code: result.code.trim().toUpperCase(), name: result.name.trim() }).eq('code', code);
-            if(error) throw error;
-            await loadVendors(); 
-        } catch (err) { showError('vendorsError', 'Error: ' + err.message);
-        } finally { hideLoading(); }
-    }
-    async function deleteVendor(code) {
-        if (!await askForPassword("Enter admin password to delete vendor:")) return;
-        if (await showMessageBox('Delete vendor "' + code + '"?', [], true)) {
-            showLoading();
-            try { 
-                const { error } = await db.from('vendors').delete().eq('code', code);
-                if (error) throw error;
-                await loadVendors(); 
-            } catch (err) { showError('vendorsError', 'Error: ' + err.message);
-            } finally { hideLoading(); }
-        }
-    }
-
+   
     // --- UTILITY FUNCTIONS ---
     function renderPagination(type) {
         const containerId = type === 'Serial' ? 'pagination-history' : 'pagination-batch-history';
@@ -1162,6 +945,7 @@
             });
         });
     }
+
     function filterHistory(type) {
         historyState[type].filter = {
             serial: document.getElementById(type === 'Serial' ? 'historySerialSearch' : 'batchHistorySerialSearch').value.trim(),
@@ -1172,34 +956,26 @@
         loadHistory(type, 1);
     }
     
-    // REPLACE your exportToPDF function with this corrected version
-async function exportToPDF(previewAreaId) {
-    const previewArea = document.getElementById(previewAreaId);
-    if (previewArea.children.length === 0) return showMessageBox('No labels to export.');
-    showLoading();
-    try {
-        const pdf = new jsPDF('l', 'cm', [5, 2.5]);
-        // [1] Convert the HTML elements into an array.
-        const labelElements = Array.from(previewArea.children);
-        // [2] Start all the html2canvas rendering jobs at once.
-        // This returns an array of promises, without waiting for them to finish yet.
-        const promises = labelElements.map(labelEl =>
-            html2canvas(labelEl, { scale: 3, useCORS: true })
-        );
-        // [3] Wait here for ALL the rendering jobs to complete in parallel.
-        const canvases = await Promise.all(promises);
-        // [4] Now that all canvases are ready, loop through them and add them to the PDF.
-        canvases.forEach((canvas, i) => {
-            if (i > 0) pdf.addPage([5, 2.5], 'l');
-            pdf.addImage(canvas.toDataURL('image/png', 1.0), 'PNG', 0, 0, 5, 2.5);
-        });
-        pdf.save('VKM_Labels.pdf');
-    } catch (err) {
-        showMessageBox('Error exporting to PDF: ' + err.message);
-    } finally {
-        hideLoading();
+    async function exportToPDF(previewAreaId) {
+        const previewArea = document.getElementById(previewAreaId);
+        if (previewArea.children.length === 0) return showMessageBox('No labels to export.');
+        showLoading();
+        try {
+            const pdf = new jsPDF('l', 'cm', [5, 2.5]);
+            const labelElements = Array.from(previewArea.children);
+            const promises = labelElements.map(labelEl => html2canvas(labelEl, { scale: 3, useCORS: true }));
+            const canvases = await Promise.all(promises);
+            canvases.forEach((canvas, i) => {
+                if (i > 0) pdf.addPage([5, 2.5], 'l');
+                pdf.addImage(canvas.toDataURL('image/png', 1.0), 'PNG', 0, 0, 5, 2.5);
+            });
+            pdf.save('VKM_Labels.pdf');
+        } catch (err) {
+            showMessageBox('Error exporting to PDF: ' + err.message);
+        } finally {
+            hideLoading();
+        }
     }
-}
 
     function printLabels(previewAreaId) {
         const previewArea = document.getElementById(previewAreaId);
@@ -1215,6 +991,7 @@ async function exportToPDF(previewAreaId) {
             printWindow.close();
         };
     }
+
     function exportToCsv(data, fileName) {
         if (!data || data.length === 0) {
             return showMessageBox('No data to export.');
@@ -1224,10 +1001,7 @@ async function exportToPDF(previewAreaId) {
             const headers = Object.keys(data[0]);
             let csvContent = headers.join(',') + '\n';
             data.forEach(row => {
-                const values = headers.map(header => {
-                    const value = row[header] === null || row[header] === undefined ? '' : String(row[header]);
-                    return `"${value.replace(/"/g, '""')}"`;
-                });
+                const values = headers.map(header => `"${(String(row[header] ?? '')).replace(/"/g, '""')}"`);
                 csvContent += values.join(',') + '\n';
             });
             const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
@@ -1243,6 +1017,7 @@ async function exportToPDF(previewAreaId) {
             hideLoading();
         }
     }
+
     async function exportHistoryToCsv(type, filtered) {
         showLoading();
         const errorDivId = type === 'Serial' ? 'historyError' : 'batchHistoryError';
@@ -1267,21 +1042,18 @@ async function exportToPDF(previewAreaId) {
             exportToCsv(data, `VKM_${type}_History_${(filtered ? 'Filtered' : 'All')}.csv`);
         } catch(err) { showError(errorDivId, 'Error exporting: ' + err.message); } finally { hideLoading(); }
     }
+    
     async function askForPassword(message) {
         const result = await showMessageBox(message, [{ id: 'adminPassword', type: 'password', placeholder: 'Password' }], true);
-        if (!result || !result.adminPassword) return false;
-
-        // For real security, this password check MUST be a Supabase Edge Function.
-        // This is a placeholder for that secure check.
-        // For now, it's a simple client-side check which is NOT secure.
-        // TODO: Replace this with a call to a Supabase Edge Function.
-        if (result.adminPassword === '123') { // Replace '123' with a temporary password
+        if (result && result.adminPassword === '123') { // Replace '123' with a secure admin password
             return true;
-        } else {
+        } else if (result) {
             await showMessageBox('Incorrect password.');
             return false;
         }
+        return false;
     }
+
     function showMessageBox(message, inputs = [], showCancel = false) {
          return new Promise(resolve => {
             const overlay = document.getElementById('messageBoxOverlay');
@@ -1299,7 +1071,6 @@ async function exportToPDF(previewAreaId) {
 
             const confirmBtn = document.getElementById('messageBoxConfirm');
             const cancelBtn = document.getElementById('messageBoxCancel');
-            
             cancelBtn.style.display = (showCancel || inputs.length > 0) ? 'inline-block' : 'none';
             
             const close = value => {
@@ -1312,9 +1083,7 @@ async function exportToPDF(previewAreaId) {
             confirmBtn.onclick = () => {
                 if (inputs.length > 0) {
                     const values = {};
-                    inputs.forEach(input => {
-                        values[input.id] = document.getElementById(input.id).value;
-                    });
+                    inputs.forEach(input => { values[input.id] = document.getElementById(input.id).value; });
                     close(values);
                 } else {
                     close(true);
@@ -1324,6 +1093,7 @@ async function exportToPDF(previewAreaId) {
             overlay.classList.add('active');
         });
     }
+
     async function toggleReprint() {
         const reprintTab = document.getElementById('reprintTab');
         const reprintBtn = document.getElementById('showReprintBtn');
@@ -1341,7 +1111,6 @@ async function exportToPDF(previewAreaId) {
         }
     }
 
-    // --- INITIALIZATION CALL ---
     if (document.readyState === 'loading') {
         document.addEventListener('DOMContentLoaded', onDomReady);
     } else {
